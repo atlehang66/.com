@@ -11,6 +11,10 @@
     <section id="top" style="top: 0; position: fixed; width: 100%; background-color: #f1f1f1; padding: 10px; text-align: center;">
         <header>Men's Fashion</header>
         <span>Modern, Comfortable, You</span>
+        <div id="cart-icon">
+            <span class="cart-symbol">🛒</span>
+            <span id="cart-count" class="cart-count">0</span>
+        </div>
     </section>
     <section id="hero">
         <div class="hero-inner">
@@ -31,56 +35,73 @@
      <!-- banner bugging -->
     <section id= "banner-menu">
         <div class="shirts" id = 1 style="display: flex; flex-wrap: wrap; justify-content: center; gap: 45px; position: relative; padding-bottom: 48px;">
-            <div class="special-item">
+            <div class="special-item" data-product="Slim Fit Tee" data-price="10.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Slim Fit Tee">
                 <h3>Slim Fit Tee</h3>
                 <p>Soft cotton tee with a tailored fit.</p>
-                <p>Price: $10.00</p>
+                <p class="price">Price: $10.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Oxford Shirt" data-price="20.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Oxford Shirt">
                 <h3>Oxford Shirt</h3>
                 <p>Classic oxford for smart-casual looks.</p>
-                <p>Price: $20.00</p>
+                <p class="price">Price: $20.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Casual Chinos" data-price="30.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Casual Chinos">
                 <h3>Casual Chinos</h3>
                 <p>Versatile chinos in multiple colors.</p>
-                <p>Price: $30.00</p>
+                <p class="price">Price: $30.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
         </div>
         <div class="shoes" id = 2 style="display: flex; flex-wrap: wrap; justify-content: center; gap: 45px; position: relative; padding-bottom: 48px;">
-            <div class="special-item">
+            <div class="special-item" data-product="Denim Jeans" data-price="10.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Denim Jeans">
                 <h3>Denim Jeans</h3>
                 <p>Classic denim with durable stitching.</p>
-                <p>Price: $10.00</p>
+                <p class="price">Price: $10.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Leather Jacket" data-price="20.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Leather Jacket">
                 <h3>Leather Jacket</h3>
                 <p>Premium leather for an elevated look.</p>
-                <p>Price: $20.00</p>
+                <p class="price">Price: $20.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Bomber Jacket" data-price="30.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Bomber Jacket">
                 <h3>Bomber Jacket</h3>
                 <p>Lightweight bomber for daily wear.</p>
-                <p>Price: $30.00</p>
+                <p class="price">Price: $30.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
             <!-- <div class="category-name">Outerwear</div> -->
         </div>
         <div class="jeans" id = 3 style="display: flex; flex-wrap: wrap; justify-content: center; gap: 45px; position: relative; padding-bottom: 48px;">
-            <div class="special-item">
+            <div class="special-item" data-product="Sneakers" data-price="10.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Sneakers">
                 <h3>Sneakers</h3>
                 <p>Comfortable everyday sneakers.</p>
-                <p>Price: $10.00</p>
+                <p class="price">Price: $10.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Loafers" data-price="20.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Loafers">
                 <h3>Loafers</h3>
-                <p>Smart-casual loafers in leather.
-                </p>
-                <p>Price: $20.00</p>
+                <p>Smart-casual loafers in leather.</p>
+                <p class="price">Price: $20.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
-            <div class="special-item">
+            <div class="special-item" data-product="Classic Belt" data-price="30.00">
+                <img src="images/91D3xTDLwrL._UL1500_.jpg" alt="Classic Belt">
                 <h3>Classic Belt</h3>
                 <p>Durable leather belt with metal buckle.</p>
-                <p>Price: $30.00</p>
+                <p class="price">Price: $30.00</p>
+                <button class="add-to-cart-btn">Add to Cart</button>
             </div>
             <!-- <div class="category-name">Footwear & Accessories</div> -->
         </div>
@@ -91,7 +112,7 @@
          <form style=" align-items: center; gap: 10px;">
             <div class="CTA" style="float: right;" align-items: center; gap: 10px;">
                 <input type="text" placeholder="Email" style="padding: 5px; width: 200px;">
-                <button type="submit" style="padding: 5px 10px;">Keep me updated</button>
+                <button type="submit" style="padding: 5px 10px;">Claim My Membership</button>
                 
             </div>
         </form>
@@ -129,5 +150,227 @@
         <strong>.com@gmail.com</strong>
         <strong>addreas street lane</strong>
     </section>
+
+    <!-- Product Preview Modal -->
+    <div id="preview-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div class="modal-body">
+                <img id="preview-image" src="" alt="Product">
+                <div class="preview-info">
+                    <h2 id="preview-title"></h2>
+                    <p id="preview-description"></p>
+                    <p id="preview-price" class="preview-price"></p>
+                    <button id="preview-cart-btn" class="preview-add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- iOS-style Notifications Container -->
+    <div id="notifications-container"></div>
+
+    <script>
+        // iOS-style Notification System
+        function showNotification(message, type = 'info', duration = 3000) {
+            const container = document.getElementById('notifications-container');
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            
+            const icon = getNotificationIcon(type);
+            notification.innerHTML = `
+                <div class="notification-icon">${icon}</div>
+                <div class="notification-content">
+                    <p class="notification-message">${message}</p>
+                </div>
+            `;
+            
+            container.appendChild(notification);
+            
+            // Trigger animation
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            // Remove after duration
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 300);
+            }, duration);
+        }
+        
+        function getNotificationIcon(type) {
+            const icons = {
+                'success': '✓',
+                'error': '✕',
+                'info': 'ℹ',
+                'warning': '⚠'
+            };
+            return icons[type] || icons['info'];
+        }
+
+        // Track if user has signed up and cart items
+        let isSignedUp = false;
+        let cartItems = [];
+
+        // Get all special items and add click handlers
+        const specialItems = document.querySelectorAll('.special-item');
+        const modal = document.getElementById('preview-modal');
+        const closeBtn = document.querySelector('.close-btn');
+        const previewCartBtn = document.getElementById('preview-cart-btn');
+        const cartCountEl = document.getElementById('cart-count');
+        const cartIcon = document.getElementById('cart-icon');
+        let currentProductName = '';
+        let currentProductPrice = '';
+
+        // Open preview modal on card click
+        specialItems.forEach(item => {
+            item.addEventListener('click', function(e) {
+                // Don't open modal if clicking the button
+                if (e.target.classList.contains('add-to-cart-btn')) return;
+
+                const title = this.querySelector('h3').textContent;
+                const description = this.querySelector('p').textContent;
+                const price = this.dataset.price;
+                const image = this.querySelector('img').src;
+
+                currentProductName = this.dataset.product;
+                currentProductPrice = price;
+
+                document.getElementById('preview-title').textContent = title;
+                document.getElementById('preview-description').textContent = description;
+                document.getElementById('preview-price').textContent = `Price: $${price}`;
+                document.getElementById('preview-image').src = image;
+
+                modal.style.display = 'flex';
+            });
+        });
+
+        // Close modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Handle Add to Cart from buttons
+        document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                handleAddToCart(btn);
+            });
+        });
+
+        // Handle Add to Cart from preview modal
+        previewCartBtn.addEventListener('click', () => {
+            handleAddToCart(previewCartBtn);
+        });
+
+        function handleAddToCart(btn) {
+            if (!isSignedUp) {
+                // Scroll to signup section
+                const signupSection = document.getElementById('signup');
+                signupSection.scrollIntoView({ behavior: 'smooth' });
+                showNotification('Please sign up first to add items to cart!', 'warning');
+                return;
+            }
+            
+            // Get product name and price
+            const productName = currentProductName || btn.closest('.special-item').dataset.product;
+            const productPrice = currentProductPrice || btn.closest('.special-item').dataset.price;
+            
+            // Add to cart
+            cartItems.push({
+                name: productName,
+                price: productPrice,
+                id: Date.now()
+            });
+            
+            // Update cart count
+            updateCartCount();
+            showNotification(`${productName} added to cart!`, 'success');
+            modal.style.display = 'none';
+        }
+
+        function updateCartCount() {
+            cartCountEl.textContent = cartItems.length;
+        }
+
+        // Handle cart icon click
+        cartIcon.addEventListener('click', () => {
+            if (cartItems.length === 0) {
+                showNotification('Your cart is empty!', 'info');
+                return;
+            }
+            
+            let total = 0;
+            cartItems.forEach((item) => {
+                total += parseFloat(item.price);
+            });
+            
+            // Show cart modal with items
+            showCartModal(total);
+        });
+        
+        function showCartModal(total) {
+            const cartModal = document.createElement('div');
+            cartModal.className = 'cart-modal';
+            
+            let itemsHTML = '';
+            cartItems.forEach((item, index) => {
+                itemsHTML += `<div class="cart-item"><span>${index + 1}. ${item.name}</span><span>$${item.price}</span></div>`;
+            });
+            
+            cartModal.innerHTML = `
+                <div class="cart-modal-content">
+                    <div class="cart-modal-header">
+                        <h3>Your Cart</h3>
+                        <span class="cart-close-btn">&times;</span>
+                    </div>
+                    <div class="cart-items">${itemsHTML}</div>
+                    <div class="cart-total"><strong>Total: $${total.toFixed(2)}</strong></div>
+                    <button class="cart-checkout-btn">Proceed to Checkout</button>
+                </div>
+            `;
+            
+            document.body.appendChild(cartModal);
+            
+            cartModal.querySelector('.cart-close-btn').addEventListener('click', () => {
+                cartModal.classList.remove('show');
+                setTimeout(() => cartModal.remove(), 300);
+            });
+            
+            cartModal.querySelector('.cart-checkout-btn').addEventListener('click', () => {
+                showNotification('Proceeding to checkout...', 'success');
+                cartModal.classList.remove('show');
+                setTimeout(() => cartModal.remove(), 300);
+            });
+            
+            setTimeout(() => cartModal.classList.add('show'), 10);
+        }
+
+        // Handle signup
+        const signupForm = document.querySelector('#signup form');
+        const signupInput = document.querySelector('#signup input[type="text"]');
+        const signupButton = document.querySelector('#signup button');
+
+        signupButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const email = signupInput.value.trim();
+            
+            if (email && email.includes('@')) {
+                isSignedUp = true;
+                showNotification('Welcome! You\'re signed up. You can now add items to cart.', 'success');
+                signupInput.value = '';
+                // Visual feedback that user is signed up
+                signupButton.textContent = '✓ Signed Up';
+                signupButton.style.backgroundColor = '#28a745';
+            } else {
+                showNotification('Please enter a valid email address.', 'error');
+            }
+        });
+    </script>
 </body>
 </html>

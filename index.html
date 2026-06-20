@@ -337,10 +337,13 @@
             modal.style.display = 'none';
         });
 
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
+        cartIcon.addEventListener('click', () => {
+            if (state.cart.length === 0) {
+                showNotification('Your cart is empty!', 'info');
+                return;
             }
+            const total = state.cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
+            showCartModal(total);
         });
 
         previewCartBtn.addEventListener('click', () => {
@@ -356,12 +359,20 @@
 
             cartItems.push({ name: productName, price: productPrice, id: Date.now() });
             updateCartCount();
-            showNotification(`${productName} added to cart!`, 'success');
-            modal.style.display = 'none';
+            showNotification(`${product.name} added to cart!`, 'success');
+            closeModal();
+        }
+
+        function setUser(email) {
+            state.user = { email };
+            signupInput.value = '';
+            signupButton.textContent = '✓ Signed Up';
+            signupButton.style.backgroundColor = '#28a745';
+            showNotification('Welcome! You\'re signed up. You can now add items to cart.', 'success');
         }
 
         function updateCartCount() {
-            cartCountEl.textContent = cartItems.length;
+            cartCountEl.textContent = state.cart.length;
         }
 
         cartIcon.addEventListener('click', () => {

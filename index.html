@@ -298,6 +298,7 @@
         ========================================================= */
         let isSignedUp = false;
         let cartItems = [];
+        let pendingCartItem = null; // item the user tried to add before signing up
 
         const modal = document.getElementById('preview-modal');
         const closeBtn = document.querySelector('.close-btn');
@@ -337,13 +338,10 @@
             modal.style.display = 'none';
         });
 
-        cartIcon.addEventListener('click', () => {
-            if (state.cart.length === 0) {
-                showNotification('Your cart is empty!', 'info');
-                return;
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
             }
-            const total = state.cart.reduce((sum, item) => sum + parseFloat(item.price), 0);
-            showCartModal(total);
         });
 
         previewCartBtn.addEventListener('click', () => {
@@ -352,27 +350,21 @@
 
         function handleAddToCart(productName, productPrice) {
             if (!isSignedUp) {
+                pendingCartItem = { name: productName, price: productPrice };
+                modal.style.display = 'none'; // close the preview modal so the signup form is actually visible
                 document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
-                showNotification('Please sign up first to add items to cart!', 'warning');
+                showNotification(`Sign up below and we'll add ${productName} to your cart automatically!`, 'warning');
                 return;
             }
 
             cartItems.push({ name: productName, price: productPrice, id: Date.now() });
             updateCartCount();
-            showNotification(`${product.name} added to cart!`, 'success');
-            closeModal();
-        }
-
-        function setUser(email) {
-            state.user = { email };
-            signupInput.value = '';
-            signupButton.textContent = '✓ Signed Up';
-            signupButton.style.backgroundColor = '#28a745';
-            showNotification('Welcome! You\'re signed up. You can now add items to cart.', 'success');
+            showNotification(`${productName} added to cart!`, 'success');
+            modal.style.display = 'none';
         }
 
         function updateCartCount() {
-            cartCountEl.textContent = state.cart.length;
+            cartCountEl.textContent = cartItems.length;
         }
 
         cartIcon.addEventListener('click', () => {
@@ -431,10 +423,18 @@
 
             if (email && email.includes('@')) {
                 isSignedUp = true;
-                showNotification("Welcome! You're signed up. You can now add items to cart.", 'success');
                 signupInput.value = '';
                 signupButton.textContent = '✓ Signed Up';
                 signupButton.style.backgroundColor = '#28a745';
+
+                if (pendingCartItem) {
+                    cartItems.push({ ...pendingCartItem, id: Date.now() });
+                    updateCartCount();
+                    showNotification(`Welcome! ${pendingCartItem.name} was added to your cart.`, 'success');
+                    pendingCartItem = null;
+                } else {
+                    showNotification("Welcome! You're signed up. You can now add items to cart.", 'success');
+                }
             } else {
                 showNotification('Please enter a valid email address.', 'error');
             }

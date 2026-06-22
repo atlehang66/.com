@@ -146,6 +146,95 @@
         .payment-logo svg { height: 26px; width: auto; display: block; }
 
         .cart-item-size { color: var(--theme-ink-soft); font-size: 0.85em; }
+
+        /* --- header search / category filter --- */
+        .search-toggle-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding-top: 20px;
+            padding-left: 45px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            outline: none;
+            box-shadow: none;
+
+            position: fixed;
+            left: 0;
+            top: 0;
+            transform: translateY(-50%);
+            z-index: 1000;
+        }
+
+        .search-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background: var(--theme-surface);
+            border-bottom: 1px solid var(--theme-line);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+            padding: 16px 20px 20px;
+            z-index: 105;
+        }
+        .search-panel[hidden] { display: none; }
+
+        .search-panel-inner {
+            max-width: 720px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .product-search-input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--theme-line);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color .15s;
+        }
+        .product-search-input:focus { border-color: var(--theme-ink); }
+
+        .category-toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: center;
+        }
+
+        .category-toggle-btn {
+            padding: 6px 14px;
+            border: 1px solid var(--theme-line);
+            border-radius: 999px;
+            background: var(--theme-surface);
+            color: var(--theme-ink);
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background .15s, color .15s, border-color .15s;
+        }
+        .category-toggle-btn:hover { border-color: var(--theme-ink); }
+        .category-toggle-btn.active {
+            background: var(--theme-ink);
+            color: var(--theme-surface);
+            border-color: var(--theme-ink);
+        }
+
+        .search-no-results {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--theme-ink-soft);
+            margin: 4px 0 0;
+        }
+
+        .category-section.is-filtered-out,
+        .product-card.is-filtered-out,
+        .ad-banner.is-hidden-by-filter {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -162,7 +251,17 @@
                 <span class="cart-symbol">🛒</span>
                 <span id="cart-count" class="cart-count">0</span>
         </div>
-           
+            <button id="search-toggle-btn" class="search-toggle-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="search-panel">
+                <span aria-hidden="true">🔍</span>
+            </button>
+        </div>
+
+        <div id="search-panel" class="search-panel" hidden>
+            <div class="search-panel-inner">
+                <input type="text" id="product-search" class="product-search-input" placeholder="Search products by name…" autocomplete="off">
+                <div class="category-toggle-group" id="category-toggle-group" role="group" aria-label="Filter by category"></div>
+                <p id="search-no-results" class="search-no-results" hidden>No products match your search.</p>
+            </div>
         </div>
     </section>
 
@@ -555,6 +654,15 @@
             ).join('');
         }
 
+        function renderCategoryToggles() {
+            const group = document.getElementById('category-toggle-group');
+            const buttons = ['<button type="button" class="category-toggle-btn active" data-category="all">All</button>']
+                .concat(PRODUCT_CATALOG.map(category =>
+                    `<button type="button" class="category-toggle-btn" data-category="${category.id}">${category.name}</button>`
+                ));
+            group.innerHTML = buttons.join('');
+        }
+
         function renderCatalog() {
             const root = document.getElementById('catalog-root');
             root.innerHTML = '';
@@ -576,6 +684,7 @@
         }
 
         renderCategoryNav();
+        renderCategoryToggles();
         renderCatalog();
 
         /* =========================================================
@@ -629,6 +738,13 @@
         const contactBtn = document.getElementById('contact-btn');
         const contactModal = document.getElementById('contact-modal');
         const contactCloseBtn = document.getElementById('contact-close-btn');
+
+        const searchToggleBtn = document.getElementById('search-toggle-btn');
+        const searchPanel = document.getElementById('search-panel');
+        const productSearchInput = document.getElementById('product-search');
+        const categoryToggleGroup = document.getElementById('category-toggle-group');
+        const searchNoResults = document.getElementById('search-no-results');
+        let activeCategoryFilter = 'all';
 
         // --- size selection on a grid card ---
         function selectSize(card, chip) {
@@ -745,6 +861,13 @@
         window.addEventListener('click', (e) => {
             if (e.target === modal) modal.style.display = 'none';
             if (e.target === contactModal) contactModal.style.display = 'none';
+
+            const panelIsOpen = !searchPanel.hasAttribute('hidden');
+            const clickedInsidePanel = searchPanel.contains(e.target);
+            const clickedToggleBtn = searchToggleBtn.contains(e.target);
+            if (panelIsOpen && !clickedInsidePanel && !clickedToggleBtn) {
+                closeSearchPanel();
+            }
         });
 
         previewCartBtn.addEventListener('click', () => {
@@ -834,6 +957,64 @@
         contactCloseBtn.addEventListener('click', () => {
             contactModal.style.display = 'none';
         });
+
+        // --- header search / category filter ---
+        function openSearchPanel() {
+            searchPanel.removeAttribute('hidden');
+            searchToggleBtn.setAttribute('aria-expanded', 'true');
+            productSearchInput.focus();
+        }
+
+        function closeSearchPanel() {
+            searchPanel.setAttribute('hidden', '');
+            searchToggleBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        searchToggleBtn.addEventListener('click', () => {
+            if (searchPanel.hasAttribute('hidden')) {
+                openSearchPanel();
+            } else {
+                closeSearchPanel();
+            }
+        });
+
+        productSearchInput.addEventListener('input', applyFilters);
+
+        categoryToggleGroup.addEventListener('click', (e) => {
+            const btn = e.target.closest('.category-toggle-btn');
+            if (!btn) return;
+            activeCategoryFilter = btn.dataset.category;
+            categoryToggleGroup.querySelectorAll('.category-toggle-btn').forEach(b => b.classList.toggle('active', b === btn));
+            applyFilters();
+        });
+
+        function applyFilters() {
+            const term = productSearchInput.value.trim().toLowerCase();
+            const isFiltering = term !== '' || activeCategoryFilter !== 'all';
+            let totalVisible = 0;
+
+            document.querySelectorAll('.category-section').forEach(section => {
+                const categoryId = section.id.replace('category-', '');
+                const matchesCategory = activeCategoryFilter === 'all' || categoryId === activeCategoryFilter;
+
+                let visibleInSection = 0;
+                section.querySelectorAll('.product-card').forEach(card => {
+                    const matchesTerm = !term || card.dataset.product.toLowerCase().includes(term);
+                    const show = matchesCategory && matchesTerm;
+                    card.classList.toggle('is-filtered-out', !show);
+                    if (show) visibleInSection++;
+                });
+
+                section.classList.toggle('is-filtered-out', visibleInSection === 0);
+                totalVisible += visibleInSection;
+            });
+
+            document.querySelectorAll('.ad-banner').forEach(banner => {
+                banner.classList.toggle('is-hidden-by-filter', isFiltering);
+            });
+
+            searchNoResults.hidden = totalVisible !== 0;
+        }
 
         // --- signup ---
         const signupInput = document.querySelector('#signup input[type="text"]');

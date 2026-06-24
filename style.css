@@ -22,6 +22,7 @@ body {
 }
 
 #cart-icon  {
+  margin-top: 20px;
   position: absolute;
   right: 20px;
   top: 50%;
@@ -925,4 +926,243 @@ body {
   .cart-modal-content {
     width: 95%;
   }
+}
+/* =========================================================
+   ADD EVERYTHING BELOW THIS LINE TO YOUR EXISTING style.css
+   (This was previously an inline <style> block in the HTML.
+   It has been moved here, and includes these fixes:
+     1. Contact + search icon buttons no longer overlap.
+     2. Cart icon now shares the same button style (padding,
+        radius, hover state) as contact + search.
+     3. Emoji glyphs replaced with inline SVG icons, so new
+        .icon rules are included to size/color them.
+   --theme-ink is the one color most of this uses — change it
+   to your real brand color and everything below matches.
+========================================================= */
+:root {
+    --theme-ink: #232323;
+    --theme-ink-soft: #6b6b6b;
+    --theme-line: #d9d9d9;
+    --theme-surface: #ffffff;
+}
+
+/* --- top bar: cart + contact + search --- */
+.top-actions {
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 110;
+}
+.top-actions #cart-icon { position: static; }
+
+/* Contact + search icon buttons sit at top-left, fixed, with a
+   set left offset each (instead of relying on padding to push
+   them apart) so their click targets never overlap. */
+.contact-btn,
+.search-toggle-btn,
+#cart-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    color: var(--theme-ink);
+    padding: 8px;
+    border-radius: 6px;
+}
+.contact-btn,
+.search-toggle-btn {
+    position: fixed;
+    top: 12px;
+    z-index: 1000;
+}
+.contact-btn:hover,
+.search-toggle-btn:hover,
+#cart-icon:hover,
+.contact-btn:focus-visible,
+.search-toggle-btn:focus-visible {
+    background: rgba(0, 0, 0, 0.06);
+}
+.contact-btn { left: 12px; }
+.search-toggle-btn { left: 56px; } /* 44px clear of contact-btn's icon + padding */
+
+/* Inline SVG icon sizing — used by contact, search, and cart */
+.icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.contact-info h2 { margin-top: 0; }
+.contact-info p { margin: 8px 0; color: var(--theme-ink); }
+
+/* --- category quick-nav --- */
+.category-nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0 8px;
+}
+.category-pill {
+    padding: 8px 16px;
+    border: 1px solid var(--theme-line);
+    border-radius: 999px;
+    font-size: 0.85rem;
+    text-decoration: none;
+    color: var(--theme-ink);
+    background: var(--theme-surface);
+    transition: background .15s, color .15s;
+}
+.category-pill:hover,
+.category-pill:focus-visible {
+    background: var(--theme-ink);
+    color: var(--theme-surface);
+}
+
+/* --- size selector (grid cards + modal) --- */
+.size-block { margin: 10px 0 12px; text-align: left; }
+.size-label {
+    display: block;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    color: var(--theme-ink-soft);
+    margin-bottom: 6px;
+}
+.size-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.size-chip {
+    border: 1px solid var(--theme-line);
+    background: var(--theme-surface);
+    color: var(--theme-ink);
+    font-size: 0.8rem;
+    padding: 5px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, color .15s;
+}
+.size-chip:hover { border-color: var(--theme-ink); }
+.size-chip.active {
+    background: var(--theme-ink);
+    color: var(--theme-surface);
+    border-color: var(--theme-ink);
+}
+.size-measurement {
+    font-size: 0.75rem;
+    color: var(--theme-ink-soft);
+    margin: 6px 0 0;
+    min-height: 1em;
+    opacity: 0;
+    transition: opacity .2s;
+}
+.size-measurement.show { opacity: 1; }
+
+.size-block.size-alert .size-label { color: #b3261e; }
+.size-block.size-alert .size-row { animation: size-shake .4s; }
+@keyframes size-shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+/* --- payment methods strip (footer) --- */
+.payment-eyebrow {
+    margin: 0 0 8px;
+    font-size: 0.7rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--theme-ink-soft);
+}
+.payment-logos {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+.payment-logo { color: var(--theme-ink); }
+.payment-logo svg { height: 26px; width: auto; display: block; }
+
+.cart-item-size { color: var(--theme-ink-soft); font-size: 0.85em; }
+
+/* --- header search / category filter --- */
+.search-panel {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--theme-surface);
+    border-bottom: 1px solid var(--theme-line);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+    padding: 16px 20px 20px;
+    z-index: 105;
+}
+.search-panel[hidden] { display: none; }
+
+.search-panel-inner {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.product-search-input {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--theme-line);
+    border-radius: 8px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color .15s;
+}
+.product-search-input:focus { border-color: var(--theme-ink); }
+
+.category-toggle-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.category-toggle-btn {
+    padding: 6px 14px;
+    border: 1px solid var(--theme-line);
+    border-radius: 999px;
+    background: var(--theme-surface);
+    color: var(--theme-ink);
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background .15s, color .15s, border-color .15s;
+}
+.category-toggle-btn:hover { border-color: var(--theme-ink); }
+.category-toggle-btn.active {
+    background: var(--theme-ink);
+    color: var(--theme-surface);
+    border-color: var(--theme-ink);
+}
+
+.search-no-results {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--theme-ink-soft);
+    margin: 4px 0 0;
+}
+
+.category-section.is-filtered-out,
+.product-card.is-filtered-out,
+.ad-banner.is-hidden-by-filter {
+    display: none;
 }

@@ -17,7 +17,7 @@ body {
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  z-index: 100;
+  z-index: 100;mdk
   position: relative;
 }
 

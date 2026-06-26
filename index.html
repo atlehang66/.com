@@ -192,6 +192,9 @@
     <!-- Bubbles Animation -->
     <script src="bubbles.js"></script>
 
+    <!-- Supabase client (lets the frontend query the database directly, respecting RLS) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
         /* =========================================================
            SIZE CHARTS
@@ -246,89 +249,72 @@
 
         /* =========================================================
            CATALOG DATA
-           Categories were regrouped for clearer shopping:
-           Tops / Bottoms / Outerwear / Footwear / Accessories,
-           each with its own quick-nav pill. An ad banner is
-           injected after every 2 categories.
-           Swap image paths for real product photography any time —
-           everything else (layout, cart, modal, sizing) keeps working.
+           Now loaded live from Supabase instead of being hardcoded.
+           See loadCatalogFromSupabase() below — it fetches
+           categories + products and shapes them into the same
+           structure the renderer already expects, so renderCatalog(),
+           renderCategoryNav() etc. don't need to change at all.
         ========================================================= */
-        const IMG = {
-            shirt: 'images/91D3xTDLwrL._UL1500_.jpg',
-            denim: 'images/US_Loose_Baggy_PLP_Headers__M_569_LOOSESTRAIGHT.jfif',
-            shoe:  'images/18959422-high-heels-shoes.jpg'
-        };
+        const SUPABASE_URL = 'https://hslthecstubekjahgfzt.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_vorzX1AzK6j18WhY7lGYDA_Yb7GbHkM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        const PRODUCT_CATALOG = [
-            {
-                id: 'featured',
-                name: 'Featured',
-                tagline: 'Hand-picked favorites, trending this week',
-                products: [
-                    { name: 'Slim Fit Tee',   price: 18.00,  image: IMG.shirt, description: 'Soft cotton tee with a tailored fit.', sizeType: 'apparel' },
-                    { name: 'Denim Jeans',    price: 58.00,  image: IMG.denim, description: 'Classic denim with durable stitching.', sizeType: 'bottoms' },
-                    { name: 'Leather Jacket', price: 189.00, image: IMG.shirt, description: 'Premium leather for an elevated look.', sizeType: 'outerwear' },
-                    { name: 'Sneakers',       price: 64.00,  image: IMG.shoe,  description: 'Comfortable everyday sneakers.', sizeType: 'footwear' }
-                ]
-            },
-            {
-                id: 'tops',
-                name: 'Tops',
-                tagline: 'Tailored fits in breathable fabrics',
-                products: [
-                    { name: 'Slim Fit Tee',      price: 18.00, image: IMG.shirt, description: 'Soft cotton tee with a tailored fit.', sizeType: 'apparel' },
-                    { name: 'Oxford Shirt',      price: 42.00, image: IMG.shirt, description: 'Classic oxford for smart-casual looks.', sizeType: 'apparel' },
-                    { name: 'Henley Tee',        price: 22.00, image: IMG.shirt, description: 'Three-button henley in brushed cotton.', sizeType: 'apparel' },
-                    { name: 'Flannel Overshirt', price: 48.00, image: IMG.shirt, description: 'Brushed flannel for layering in cooler weather.', sizeType: 'apparel' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'bottoms',
-                name: 'Bottoms',
-                tagline: 'Built for movement, made to last',
-                products: [
-                    { name: 'Denim Jeans',        price: 58.00, image: IMG.denim, description: 'Classic denim with durable stitching.', sizeType: 'bottoms' },
-                    { name: 'Casual Chinos',       price: 46.00, image: IMG.denim, description: 'Versatile chinos in multiple colors.', sizeType: 'bottoms' },
-                    { name: 'Cargo Pants',         price: 52.00, image: IMG.denim, description: 'Utility cargo pants with reinforced pockets.', sizeType: 'bottoms' },
-                    { name: 'Relaxed Taper Jeans', price: 62.00, image: IMG.denim, description: 'Roomy through the thigh, tapered at the ankle.', sizeType: 'bottoms' }
-                ]
-            },
-            {
-                id: 'outerwear',
-                name: 'Outerwear',
-                tagline: 'Layers for every kind of cold',
-                products: [
-                    { name: 'Leather Jacket', price: 189.00, image: IMG.shirt, description: 'Premium leather for an elevated look.', sizeType: 'outerwear' },
-                    { name: 'Bomber Jacket',  price: 98.00,  image: IMG.shirt, description: 'Lightweight bomber for daily wear.', sizeType: 'outerwear' },
-                    { name: 'Denim Jacket',   price: 84.00,  image: IMG.shirt, description: 'Classic trucker jacket in washed denim.', sizeType: 'outerwear' },
-                    { name: 'Quilted Vest',   price: 76.00,  image: IMG.shirt, description: 'Packable insulation for in-between weather.', sizeType: 'outerwear' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'footwear',
-                name: 'Footwear',
-                tagline: 'Step out in something built to last',
-                products: [
-                    { name: 'Sneakers',     price: 64.00, image: IMG.shoe, description: 'Comfortable everyday sneakers.', sizeType: 'footwear' },
-                    { name: 'Loafers',      price: 72.00, image: IMG.shoe, description: 'Smart-casual loafers in leather.', sizeType: 'footwear' },
-                    { name: 'Chukka Boots', price: 68.00, image: IMG.shoe, description: 'Ankle-height boots in suede leather.', sizeType: 'footwear' },
-                    { name: 'Canvas Boots', price: 58.00, image: IMG.shoe, description: 'Rugged canvas boots for everyday wear.', sizeType: 'footwear' }
-                ]
-            },
-            {
-                id: 'accessories',
-                name: 'Accessories',
-                tagline: 'Small details, big finish',
-                products: [
-                    { name: 'Classic Belt',          price: 28.00, image: IMG.shoe,  description: 'Durable leather belt with metal buckle.', sizeType: 'accessory' },
-                    { name: 'Leather Wallet',        price: 34.00, image: IMG.shirt, description: 'Slim bifold wallet in full-grain leather.', sizeType: 'accessory' },
-                    { name: 'Wool Beanie',           price: 19.00, image: IMG.shirt, description: 'Ribbed knit beanie for cold mornings.', sizeType: 'accessory' },
-                    { name: 'Crew Socks (3-Pack)',   price: 16.00, image: IMG.shirt, description: 'Breathable cotton-blend crew socks.', sizeType: 'accessory' }
-                ]
+        let PRODUCT_CATALOG = [];
+
+        async function loadCatalogFromSupabase() {
+            const { data: categories, error: catError } = await supabaseClient
+                .from('categories')
+                .select('*')
+                .order('name');
+
+            if (catError) {
+                console.error('Failed to load categories:', catError);
+                return false;
             }
-        ];
+
+            const { data: products, error: prodError } = await supabaseClient
+                .from('products')
+                .select('*')
+                .eq('is_active', true);
+
+            if (prodError) {
+                console.error('Failed to load products:', prodError);
+                return false;
+            }
+
+            const shapeProduct = (p) => ({
+                name: p.name,
+                price: Number(p.price),
+                image: p.image_url,
+                description: p.description,
+                sizeType: p.size_type || 'accessory'
+            });
+
+            const featuredProducts = products
+                .filter((p) => p.is_featured)
+                .map(shapeProduct);
+
+            const categorySections = categories.map((cat) => ({
+                id: cat.slug,
+                name: cat.name,
+                tagline: cat.tagline || '',
+                products: products
+                    .filter((p) => p.category_id === cat.id)
+                    .map(shapeProduct)
+            }));
+
+            PRODUCT_CATALOG = [
+                {
+                    id: 'featured',
+                    name: 'Featured',
+                    tagline: 'Hand-picked favorites, trending this week',
+                    products: featuredProducts
+                },
+                ...categorySections
+            ];
+
+            return true;
+        }
 
         const AD_BANNERS = [
             {
@@ -462,9 +448,26 @@
             });
         }
 
-        renderCategoryNav();
-        renderCategoryToggles();
-        renderCatalog();
+        /* =========================================================
+           INITIAL LOAD
+           Fetch the catalog from Supabase first, then render once
+           the data is actually available.
+        ========================================================= */
+        (async () => {
+            const root = document.getElementById('catalog-root');
+            root.innerHTML = '<p class="catalog-loading">Loading products…</p>';
+
+            const ok = await loadCatalogFromSupabase();
+
+            if (!ok) {
+                root.innerHTML = '<p class="catalog-loading">Could not load products right now. Please refresh the page.</p>';
+                return;
+            }
+
+            renderCategoryNav();
+            renderCategoryToggles();
+            renderCatalog();
+        })();
 
         /* =========================================================
            NOTIFICATIONS

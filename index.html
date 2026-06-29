@@ -85,10 +85,12 @@
         <h3 class="anime" id="1">.com members get their stuff on the low</h3>
         <h3 class="anime" id="2">are you on the list of smart shoppers?</h3>
         <h5 class="anime" id="3">you should get a pair of smarty pants</h5>
-        <form>
+        <form id="auth-form">
             <div class="CTA">
-                <input type="text" placeholder="Email" style="padding: 5px; width: 200px;">
-                <button type="submit" style="padding: 5px 10px;">Claim My Membership</button>
+                <input type="email" id="auth-email" placeholder="Email" style="padding: 5px; width: 200px;" required>
+                <input type="password" id="auth-password" placeholder="Password" style="padding: 5px; width: 200px;" required minlength="6">
+                <button type="submit" id="auth-signup-btn" style="padding: 5px 10px;">Claim My Membership</button>
+                <button type="button" id="auth-login-btn" style="padding: 5px 10px;">Log In Instead</button>
             </div>
         </form>
     </section>
@@ -506,6 +508,7 @@
            see attemptAddToCart().
         ========================================================= */
         let isSignedUp = false;
+        let currentUser = null;
         let cartItems = [];
         let pendingCartItem = null; // item the user tried to add before signing up
         let currentCard = null;     // the grid card behind whatever the preview modal is showing
@@ -798,30 +801,106 @@
             searchNoResults.hidden = totalVisible !== 0;
         }
 
-        // --- signup ---
-        const signupInput = document.querySelector('#signup input[type="text"]');
-        const signupButton = document.querySelector('#signup button');
+        // --- signup / login (real Supabase Auth) ---
+        const authForm = document.getElementById('auth-form');
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const authSignupBtn = document.getElementById('auth-signup-btn');
+        const authLoginBtn = document.getElementById('auth-login-btn');
 
-        signupButton.addEventListener('click', (e) => {
+        async function handleSignUp(email, password) {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+
+            if (error) {
+                showNotification(error.message, 'error');
+                return;
+            }
+
+            if (data.session) {
+                // Email confirmation is OFF for this project — logged in right away
+                showNotification("Welcome! You're signed up and logged in.", 'success');
+            } else {
+                // Email confirmation is ON — they must verify before they can log in
+                showNotification('Check your email to confirm your account, then log in.', 'info', 6000);
+            }
+        }
+
+        async function handleLogIn(email, password) {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+
+            if (error) {
+                showNotification(error.message, 'error');
+                return;
+            }
+
+            showNotification(`Welcome back, ${data.user.email}!`, 'success');
+        }
+
+        authForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const email = signupInput.value.trim();
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
 
-            if (email && email.includes('@')) {
-                isSignedUp = true;
-                signupInput.value = '';
-                signupButton.textContent = '✓ Signed Up';
-                signupButton.style.backgroundColor = '#28a745';
+            if (!email || !email.includes('@')) {
+                showNotification('Please enter a valid email address.', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                showNotification('Password must be at least 6 characters.', 'error');
+                return;
+            }
+
+            handleSignUp(email, password);
+        });
+
+        authLoginBtn.addEventListener('click', () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+
+            if (!email || !password) {
+                showNotification('Enter your email and password, then tap Log In.', 'warning');
+                return;
+            }
+
+            handleLogIn(email, password);
+        });
+
+        // Keep isSignedUp / currentUser in sync with the real session, and
+        // flush any item the shopper tried to add before they logged in.
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            const wasSignedUp = isSignedUp;
+            isSignedUp = !!session;
+            currentUser = session ? session.user : null;
+
+            if (isSignedUp && !wasSignedUp) {
+                authForm.reset();
+                authSignupBtn.textContent = '✓ Signed In';
+                authSignupBtn.disabled = true;
+                authLoginBtn.style.display = 'none';
 
                 if (pendingCartItem) {
                     cartItems.push({ ...pendingCartItem, id: Date.now() });
                     updateCartCount();
                     showNotification(`Welcome! ${pendingCartItem.name} (size ${pendingCartItem.size}) was added to your cart.`, 'success');
                     pendingCartItem = null;
-                } else {
-                    showNotification("Welcome! You're signed up. You can now add items to cart.", 'success');
                 }
-            } else {
-                showNotification('Please enter a valid email address.', 'error');
+            }
+
+            if (!isSignedUp && wasSignedUp) {
+                authSignupBtn.textContent = 'Claim My Membership';
+                authSignupBtn.disabled = false;
+                authLoginBtn.style.display = 'inline-block';
+            }
+        });
+
+        // Pick up an existing session on page load (e.g. returning visitor)
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data.session) {
+                isSignedUp = true;
+                currentUser = data.session.user;
+                authSignupBtn.textContent = '✓ Signed In';
+                authSignupBtn.disabled = true;
+                authLoginBtn.style.display = 'none';
             }
         });
     </script>

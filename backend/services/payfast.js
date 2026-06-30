@@ -28,4 +28,18 @@ function generateSignature(data, passphrase) {
 
   return crypto.createHash('md5').update(pfOutput).digest('hex');
 }
-module.exports = { generateSignature };
+function verifyItnSignature(pfData, passphrase) {
+  const { signature, ...dataToSign } = pfData;
+
+  const pfParamString = Object.entries(dataToSign)
+    .map(([key, val]) => `${key}=${phpUrlencode(val.toString().trim())}`)
+    .join('&') + `&passphrase=${phpUrlencode(passphrase.trim())}`;
+
+  console.log('--- ITN STRING BEING SIGNED ---');
+  console.log(pfParamString);
+
+  const expectedSig = crypto.createHash('md5').update(pfParamString).digest('hex');
+  return { valid: expectedSig === signature, expectedSig, receivedSig: signature };
+}
+
+module.exports = { generateSignature, phpUrlencode, verifyItnSignature };

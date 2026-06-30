@@ -1,4 +1,5 @@
-const { generateSignature } = require('../services/payfast');
+const { generateSignature, verifyItnSignature } = require('../services/payfast');
+const { sendOrderConfirmation } = require('../services/emailService');
 
 exports.initiatePayment = (req, res) => {
   const { amount, item_name } = req.body;
@@ -16,7 +17,6 @@ exports.initiatePayment = (req, res) => {
     item_name: item_name.replace(/\s*\(.*?\)/g, '').trim(),
   };
 
-  // Strip empty fields so signed payload matches submitted payload
   Object.keys(paymentData).forEach(key => {
     if (paymentData[key] === '' || paymentData[key] === null || paymentData[key] === undefined) {
       delete paymentData[key];
@@ -36,15 +36,27 @@ exports.initiatePayment = (req, res) => {
 
 exports.handleNotify = async (req, res) => {
   const pfData = req.body;
-  const { signature, ...dataToSign } = pfData;
 
-  const expectedSig = generateSignature(dataToSign, process.env.PAYFAST_PASSPHRASE);
-  if (signature !== expectedSig) {
+  const { valid } = verifyItnSignature(pfData, process.env.PAYFAST_PASSPHRASE);
+  if (!valid) {
+    console.error('❌ Signature mismatch — rejecting ITN');
     return res.status(400).send('Invalid signature');
   }
 
-  // TODO: POST pfData to https://sandbox.payfast.co.za/eng/query/validate
-  // TODO: update order to 'paid' in Supabase using pfData.m_payment_id
+  if (pfData.payment_status === 'COMPLETE') {
+    try {
+      await sendOrderConfirmation({
+        to: pfData.email_address,
+        customerName: pfData.name_first || 'Customer',
+        orderId: pfData.m_payment_id,
+        items: [{ name: pfData.item_name, quantity: 1, price: pfData.amount_gross }],
+        total: pfData.amount_gross,
+      });
+      console.log(`✅ Order confirmation email sent to ${pfData.email_address}`);
+    } catch (err) {
+      console.error('❌ Failed to send order confirmation email:', err.message);
+    }
+  }
 
   res.sendStatus(200);
 };

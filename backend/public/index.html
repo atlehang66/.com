@@ -81,18 +81,22 @@
     </section>
 
     <section id="signup" class="signup">
+        <div class="cursor-glow" id="cursor-glow"></div>
         <h2>Sign Up</h2>
-        <h3 class="anime" id="1">.com members get their stuff on the low</h3>
-        <h3 class="anime" id="2">are you on the list of smart shoppers?</h3>
-        <h5 class="anime" id="3">you should get a pair of smarty pants</h5>
-        <form id="auth-form">
-            <div class="CTA">
-                <input type="email" id="auth-email" placeholder="Email" style="padding: 5px; width: 200px;" required>
-                <input type="password" id="auth-password" placeholder="Password" style="padding: 5px; width: 200px;" required minlength="6">
-                <button type="submit" id="auth-signup-btn" style="padding: 5px 10px;">Claim My Membership</button>
-                <button type="button" id="auth-login-btn" style="padding: 5px 10px;">Log In Instead</button>
+        <div class="auth-glass">
+            <input type="email" id="auth-email" placeholder="Email">
+
+            <div class="auth-password-wrap">
+                <input type="password" id="auth-password" placeholder="Password">
+                <button type="button" class="auth-reveal-btn" id="auth-reveal-btn" aria-label="Show password">👁</button>
             </div>
-        </form>
+
+            <button type="button" class="auth-btn-primary" id="auth-signup-btn">Sign Up</button>
+            <button type="button" class="auth-btn-secondary" id="auth-login-btn">Log In</button>
+            <button type="button" class="auth-btn-logout" id="auth-logout-btn" style="display:none;">Log Out</button>
+
+            <p id="auth-status"></p>
+        </div>
     </section>
 
     <!-- Payment methods strip (footer); contact details live in the Contact modal -->
@@ -841,112 +845,106 @@
             });
 
             document.querySelectorAll('.ad-banner').forEach(banner => {
-                banner.classList.toggle('is-hidden-by-filter', isFiltering);
+                banner.classList.toggle('is-hidden-by-filter', isFiltering)
             });
 
             searchNoResults.hidden = totalVisible !== 0;
         }
 
-        // --- signup / login (real Supabase Auth) ---
-        const authForm = document.getElementById('auth-form');
+       // --- signup / login (real Supabase Auth) ---
         const authEmailInput = document.getElementById('auth-email');
         const authPasswordInput = document.getElementById('auth-password');
         const authSignupBtn = document.getElementById('auth-signup-btn');
         const authLoginBtn = document.getElementById('auth-login-btn');
+        const authLogoutBtn = document.getElementById('auth-logout-btn');
+        const authStatus = document.getElementById('auth-status');
 
-        async function handleSignUp(email, password) {
+        function setLoggedIn(email) {
+            isSignedUp = true;
+            authEmailInput.style.display = 'none';
+            authPasswordInput.style.display = 'none';
+            authSignupBtn.style.display = 'none';
+            authLoginBtn.style.display = 'none';
+            authLogoutBtn.style.display = 'inline-block';
+            authStatus.textContent = `Signed in as ${email}`;
+        }
+
+        function setLoggedOut() {
+            isSignedUp = false;
+            currentUser = null;
+            authEmailInput.style.display = 'inline-block';
+            authPasswordInput.style.display = 'inline-block';
+            authSignupBtn.style.display = 'inline-block';
+            authLoginBtn.style.display = 'inline-block';
+            authLogoutBtn.style.display = 'none';
+            authStatus.textContent = '';
+            authEmailInput.value = '';
+            authPasswordInput.value = '';
+        }
+
+        authSignupBtn.addEventListener('click', async () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!email || !password) { showNotification('Enter email and password.', 'warning'); return; }
+
             const { data, error } = await supabaseClient.auth.signUp({ email, password });
-
-            if (error) {
-                showNotification(error.message, 'error');
-                return;
-            }
-
+            if (error) { showNotification(error.message, 'error'); return; }
             if (data.session) {
-                // Email confirmation is OFF for this project — logged in right away
-                showNotification("Welcome! You're signed up and logged in.", 'success');
+                showNotification('Account created — you are logged in!', 'success');
             } else {
-                // Email confirmation is ON — they must verify before they can log in
-                showNotification('Check your email to confirm your account, then log in.', 'info', 6000);
+                showNotification('Check your email to confirm your account.', 'info', 6000);
             }
-        }
+        });
 
-        async function handleLogIn(email, password) {
+        authLoginBtn.addEventListener('click', async () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!email || !password) { showNotification('Enter email and password.', 'warning'); return; }
+
             const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-
-            if (error) {
-                showNotification(error.message, 'error');
-                return;
-            }
-
+            if (error) { showNotification(error.message, 'error'); return; }
             showNotification(`Welcome back, ${data.user.email}!`, 'success');
-        }
-
-        authForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = authEmailInput.value.trim();
-            const password = authPasswordInput.value;
-
-            if (!email || !email.includes('@')) {
-                showNotification('Please enter a valid email address.', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                showNotification('Password must be at least 6 characters.', 'error');
-                return;
-            }
-
-            handleSignUp(email, password);
         });
 
-        authLoginBtn.addEventListener('click', () => {
-            const email = authEmailInput.value.trim();
-            const password = authPasswordInput.value;
-
-            if (!email || !password) {
-                showNotification('Enter your email and password, then tap Log In.', 'warning');
-                return;
-            }
-
-            handleLogIn(email, password);
+        authLogoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            showNotification('Logged out.', 'info');
         });
 
-        // Keep isSignedUp / currentUser in sync with the real session, and
-        // flush any item the shopper tried to add before they logged in.
         supabaseClient.auth.onAuthStateChange((event, session) => {
-            const wasSignedUp = isSignedUp;
-            isSignedUp = !!session;
-            currentUser = session ? session.user : null;
-
-            if (isSignedUp && !wasSignedUp) {
-                authForm.reset();
-                authSignupBtn.textContent = '✓ Signed In';
-                authSignupBtn.disabled = true;
-                authLoginBtn.style.display = 'none';
-
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+                isSignedUp = true;
+                currentUser = session.user;
+                setLoggedIn(session.user.email);
                 if (pendingCartItem) {
                     cartItems.push({ ...pendingCartItem, id: Date.now() });
                     updateCartCount();
-                    showNotification(`Welcome! ${pendingCartItem.name} (size ${pendingCartItem.size}) was added to your cart.`, 'success');
+                    showNotification(`${pendingCartItem.name} (size ${pendingCartItem.size}) added to cart!`, 'success');
                     pendingCartItem = null;
                 }
             }
-
-            if (!isSignedUp && wasSignedUp) {
-                authSignupBtn.textContent = 'Claim My Membership';
-                authSignupBtn.disabled = false;
-                authLoginBtn.style.display = 'inline-block';
+            if (event === 'SIGNED_OUT') {
+                setLoggedOut();
+                document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
             }
         });
 
-        // Pick up an existing session on page load (e.g. returning visitor)
         supabaseClient.auth.getSession().then(({ data }) => {
             if (data.session) {
                 isSignedUp = true;
                 currentUser = data.session.user;
-                authSignupBtn.textContent = '✓ Signed In';
-                authSignupBtn.disabled = true;
-                authLoginBtn.style.display = 'none';
+                setLoggedIn(data.session.user.email);
+            }
+        });
+
+        // Restore session on page load
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data.session) {
+                isSignedUp = true;
+                currentUser = data.session.user;
+                setAuthSignedIn(data.session.user.email);
+            } else {
+                setAuthMode('login');
             }
         });
         async function startPayment(amount, itemName) {
@@ -999,7 +997,23 @@
             document.body.appendChild(form);
             form.submit();
         }
-        
+        // cursor glow — signup section only
+        const signupSection = document.getElementById('signup');
+        const cursorGlow = document.getElementById('cursor-glow');
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = signupSection.getBoundingClientRect();
+            const inside = e.clientY >= rect.top && e.clientY <= rect.bottom;
+            cursorGlow.style.opacity = inside ? '1' : '0';
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // reveal password toggle
+        document.getElementById('auth-reveal-btn').addEventListener('click', () => {
+            const input = document.getElementById('auth-password');
+            input.type = input.type === 'password' ? 'text' : 'password';
+        });
     </script>
 </body>
 </html>

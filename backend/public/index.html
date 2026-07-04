@@ -81,16 +81,22 @@
     </section>
 
     <section id="signup" class="signup">
+        <div class="cursor-glow" id="cursor-glow"></div>
         <h2>Sign Up</h2>
-        <h3 class="anime" id="1">.com members get their stuff on the low</h3>
-        <h3 class="anime" id="2">are you on the list of smart shoppers?</h3>
-        <h5 class="anime" id="3">you should get a pair of smarty pants</h5>
-        <form>
-            <div class="CTA">
-                <input type="text" placeholder="Email" style="padding: 5px; width: 200px;">
-                <button type="submit" style="padding: 5px 10px;">Claim My Membership</button>
+        <div class="auth-glass">
+            <input type="email" id="auth-email" placeholder="Email">
+
+            <div class="auth-password-wrap">
+                <input type="password" id="auth-password" placeholder="Password">
+                <button type="button" class="auth-reveal-btn" id="auth-reveal-btn" aria-label="Show password">👁</button>
             </div>
-        </form>
+
+            <button type="button" class="auth-btn-primary" id="auth-signup-btn">Sign Up</button>
+            <button type="button" class="auth-btn-secondary" id="auth-login-btn">Log In</button>
+            <button type="button" class="auth-btn-logout" id="auth-logout-btn" style="display:none;">Log Out</button>
+
+            <p id="auth-status"></p>
+        </div>
     </section>
 
     <!-- Payment methods strip (footer); contact details live in the Contact modal -->
@@ -192,6 +198,9 @@
     <!-- Bubbles Animation -->
     <script src="bubbles.js"></script>
 
+    <!-- Supabase client (lets the frontend query the database directly, respecting RLS) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
         /* =========================================================
            SIZE CHARTS
@@ -246,89 +255,72 @@
 
         /* =========================================================
            CATALOG DATA
-           Categories were regrouped for clearer shopping:
-           Tops / Bottoms / Outerwear / Footwear / Accessories,
-           each with its own quick-nav pill. An ad banner is
-           injected after every 2 categories.
-           Swap image paths for real product photography any time —
-           everything else (layout, cart, modal, sizing) keeps working.
+           Now loaded live from Supabase instead of being hardcoded.
+           See loadCatalogFromSupabase() below — it fetches
+           categories + products and shapes them into the same
+           structure the renderer already expects, so renderCatalog(),
+           renderCategoryNav() etc. don't need to change at all.
         ========================================================= */
-        const IMG = {
-            shirt: 'images/91D3xTDLwrL._UL1500_.jpg',
-            denim: 'images/US_Loose_Baggy_PLP_Headers__M_569_LOOSESTRAIGHT.jfif',
-            shoe:  'images/18959422-high-heels-shoes.jpg'
-        };
+        const SUPABASE_URL = 'https://hslthecstubekjahgfzt.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_vorzX1AzK6j18WhY7lGYDA_Yb7GbHkM';
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
 
-        const PRODUCT_CATALOG = [
-            {
-                id: 'featured',
-                name: 'Featured',
-                tagline: 'Hand-picked favorites, trending this week',
-                products: [
-                    { name: 'Slim Fit Tee',   price: 18.00,  image: IMG.shirt, description: 'Soft cotton tee with a tailored fit.', sizeType: 'apparel' },
-                    { name: 'Denim Jeans',    price: 58.00,  image: IMG.denim, description: 'Classic denim with durable stitching.', sizeType: 'bottoms' },
-                    { name: 'Leather Jacket', price: 189.00, image: IMG.shirt, description: 'Premium leather for an elevated look.', sizeType: 'outerwear' },
-                    { name: 'Sneakers',       price: 64.00,  image: IMG.shoe,  description: 'Comfortable everyday sneakers.', sizeType: 'footwear' }
-                ]
-            },
-            {
-                id: 'tops',
-                name: 'Tops',
-                tagline: 'Tailored fits in breathable fabrics',
-                products: [
-                    { name: 'Slim Fit Tee',      price: 18.00, image: IMG.shirt, description: 'Soft cotton tee with a tailored fit.', sizeType: 'apparel' },
-                    { name: 'Oxford Shirt',      price: 42.00, image: IMG.shirt, description: 'Classic oxford for smart-casual looks.', sizeType: 'apparel' },
-                    { name: 'Henley Tee',        price: 22.00, image: IMG.shirt, description: 'Three-button henley in brushed cotton.', sizeType: 'apparel' },
-                    { name: 'Flannel Overshirt', price: 48.00, image: IMG.shirt, description: 'Brushed flannel for layering in cooler weather.', sizeType: 'apparel' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'bottoms',
-                name: 'Bottoms',
-                tagline: 'Built for movement, made to last',
-                products: [
-                    { name: 'Denim Jeans',        price: 58.00, image: IMG.denim, description: 'Classic denim with durable stitching.', sizeType: 'bottoms' },
-                    { name: 'Casual Chinos',       price: 46.00, image: IMG.denim, description: 'Versatile chinos in multiple colors.', sizeType: 'bottoms' },
-                    { name: 'Cargo Pants',         price: 52.00, image: IMG.denim, description: 'Utility cargo pants with reinforced pockets.', sizeType: 'bottoms' },
-                    { name: 'Relaxed Taper Jeans', price: 62.00, image: IMG.denim, description: 'Roomy through the thigh, tapered at the ankle.', sizeType: 'bottoms' }
-                ]
-            },
-            {
-                id: 'outerwear',
-                name: 'Outerwear',
-                tagline: 'Layers for every kind of cold',
-                products: [
-                    { name: 'Leather Jacket', price: 189.00, image: IMG.shirt, description: 'Premium leather for an elevated look.', sizeType: 'outerwear' },
-                    { name: 'Bomber Jacket',  price: 98.00,  image: IMG.shirt, description: 'Lightweight bomber for daily wear.', sizeType: 'outerwear' },
-                    { name: 'Denim Jacket',   price: 84.00,  image: IMG.shirt, description: 'Classic trucker jacket in washed denim.', sizeType: 'outerwear' },
-                    { name: 'Quilted Vest',   price: 76.00,  image: IMG.shirt, description: 'Packable insulation for in-between weather.', sizeType: 'outerwear' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'footwear',
-                name: 'Footwear',
-                tagline: 'Step out in something built to last',
-                products: [
-                    { name: 'Sneakers',     price: 64.00, image: IMG.shoe, description: 'Comfortable everyday sneakers.', sizeType: 'footwear' },
-                    { name: 'Loafers',      price: 72.00, image: IMG.shoe, description: 'Smart-casual loafers in leather.', sizeType: 'footwear' },
-                    { name: 'Chukka Boots', price: 68.00, image: IMG.shoe, description: 'Ankle-height boots in suede leather.', sizeType: 'footwear' },
-                    { name: 'Canvas Boots', price: 58.00, image: IMG.shoe, description: 'Rugged canvas boots for everyday wear.', sizeType: 'footwear' }
-                ]
-            },
-            {
-                id: 'accessories',
-                name: 'Accessories',
-                tagline: 'Small details, big finish',
-                products: [
-                    { name: 'Classic Belt',          price: 28.00, image: IMG.shoe,  description: 'Durable leather belt with metal buckle.', sizeType: 'accessory' },
-                    { name: 'Leather Wallet',        price: 34.00, image: IMG.shirt, description: 'Slim bifold wallet in full-grain leather.', sizeType: 'accessory' },
-                    { name: 'Wool Beanie',           price: 19.00, image: IMG.shirt, description: 'Ribbed knit beanie for cold mornings.', sizeType: 'accessory' },
-                    { name: 'Crew Socks (3-Pack)',   price: 16.00, image: IMG.shirt, description: 'Breathable cotton-blend crew socks.', sizeType: 'accessory' }
-                ]
+        let PRODUCT_CATALOG = [];
+
+        async function loadCatalogFromSupabase() {
+            const { data: categories, error: catError } = await supabaseClient
+                .from('categories')
+                .select('*')
+                .order('name');
+
+            if (catError) {
+                console.error('Failed to load categories:', catError);
+                return false;
             }
-        ];
+
+            const { data: products, error: prodError } = await supabaseClient
+                .from('products')
+                .select('*')
+                .eq('is_active', true);
+
+            if (prodError) {
+                console.error('Failed to load products:', prodError);
+                return false;
+            }
+
+            const shapeProduct = (p) => ({
+                name: p.name,
+                price: Number(p.price),
+                image: p.image_url,
+                description: p.description,
+                sizeType: p.size_type || 'accessory'
+            });
+
+            const featuredProducts = products
+                .filter((p) => p.is_featured)
+                .map(shapeProduct);
+
+            const categorySections = categories.map((cat) => ({
+                id: cat.slug,
+                name: cat.name,
+                tagline: cat.tagline || '',
+                products: products
+                    .filter((p) => p.category_id === cat.id)
+                    .map(shapeProduct)
+            }));
+
+            PRODUCT_CATALOG = [
+                {
+                    id: 'featured',
+                    name: 'Featured',
+                    tagline: 'Hand-picked favorites, trending this week',
+                    products: featuredProducts
+                },
+                ...categorySections
+            ];
+
+            return true;
+        }
 
         const AD_BANNERS = [
             {
@@ -340,7 +332,7 @@
             },
             {
                 tag: 'Limited Time',
-                headline: 'Free Shipping on Orders Over $75',
+                headline: 'Free Shipping on Orders Over R75',
                 body: 'No code needed — applied automatically at checkout on outerwear and footwear.',
                 cta: 'Shop Footwear',
                 href: '#category-footwear'
@@ -462,9 +454,26 @@
             });
         }
 
-        renderCategoryNav();
-        renderCategoryToggles();
-        renderCatalog();
+        /* =========================================================
+           INITIAL LOAD
+           Fetch the catalog from Supabase first, then render once
+           the data is actually available.
+        ========================================================= */
+        (async () => {
+            const root = document.getElementById('catalog-root');
+            root.innerHTML = '<p class="catalog-loading">Loading products…</p>';
+
+            const ok = await loadCatalogFromSupabase();
+
+            if (!ok) {
+                root.innerHTML = '<p class="catalog-loading">Could not load products right now. Please refresh the page.</p>';
+                return;
+            }
+
+            renderCategoryNav();
+            renderCategoryToggles();
+            renderCatalog();
+        })();
 
         /* =========================================================
            NOTIFICATIONS
@@ -503,6 +512,7 @@
            see attemptAddToCart().
         ========================================================= */
         let isSignedUp = false;
+        let currentUser = null;
         let cartItems = [];
         let pendingCartItem = null; // item the user tried to add before signing up
         let currentCard = null;     // the grid card behind whatever the preview modal is showing
@@ -693,42 +703,88 @@
         });
 
         function showCartModal(total) {
-            const cartModal = document.createElement('div');
-            cartModal.className = 'cart-modal';
+    const cartModal = document.createElement('div');
+    cartModal.className = 'cart-modal';
 
-            let itemsHTML = '';
-            cartItems.forEach((item, index) => {
-                itemsHTML += `<div class="cart-item"><span>${index + 1}. ${item.name} <span class="cart-item-size">(Size ${item.size})</span></span><span>$${item.price}</span></div>`;
-            });
+    let itemsHTML = '';
+    cartItems.forEach((item) => {
+        itemsHTML += `
+            <div class="cart-item" data-id="${item.id}">
+                <span>${item.name} <span class="cart-item-size">(Size ${item.size})</span></span>
+                <span class="cart-item-right" style="display:flex; align-items:center; gap:10px;">
+                    $${item.price}
+                    <button type="button" class="cart-item-remove" data-id="${item.id}" aria-label="Remove ${item.name} from cart" style="background:none;border:none;cursor:pointer;font-size:16px;color:#999;">&times;</button>
+                </span>
+            </div>`;
+    });
 
-            cartModal.innerHTML = `
-                <div class="cart-modal-content">
-                    <div class="cart-modal-header">
-                        <h3>Your Cart</h3>
-                        <span class="cart-close-btn">&times;</span>
-                    </div>
-                    <div class="cart-items">${itemsHTML}</div>
-                    <div class="cart-total"><strong>Total: $${total.toFixed(2)}</strong></div>
-                    <button class="cart-checkout-btn">Proceed to Checkout</button>
-                </div>
-            `;
+    cartModal.innerHTML = `
+        <div class="cart-modal-content">
+            <div class="cart-modal-header">
+                <h3>Your Cart</h3>
+                <span class="cart-close-btn">&times;</span>
+            </div>
+            <div class="cart-items">${itemsHTML}</div>
+            <div class="cart-total"><strong>Total: $${total.toFixed(2)}</strong></div>
+            <button class="cart-checkout-btn">Proceed to Checkout</button>
+        </div>
+    `;
 
-            document.body.appendChild(cartModal);
+    document.body.appendChild(cartModal);
 
-            cartModal.querySelector('.cart-close-btn').addEventListener('click', () => {
-                cartModal.classList.remove('show');
-                setTimeout(() => cartModal.remove(), 300);
-            });
+    cartModal.querySelector('.cart-close-btn').addEventListener('click', () => {
+        cartModal.classList.remove('show');
+        setTimeout(() => cartModal.remove(), 300);
+    });
 
-            cartModal.querySelector('.cart-checkout-btn').addEventListener('click', () => {
-                showNotification('Proceeding to checkout...', 'success');
-                cartModal.classList.remove('show');
-                setTimeout(() => cartModal.remove(), 300);
-            });
+    // Remove a single item without closing the whole modal
+    cartModal.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.cart-item-remove');
+        if (!removeBtn) return;
 
-            setTimeout(() => cartModal.classList.add('show'), 10);
+        const id = Number(removeBtn.dataset.id);
+        removeFromCart(id);
+        removeBtn.closest('.cart-item').remove();
+
+        if (cartItems.length === 0) {
+            cartModal.classList.remove('show');
+            setTimeout(() => cartModal.remove(), 300);
+            showNotification('Your cart is empty!', 'info');
+            return;
         }
 
+        let newTotal = 0;
+        cartItems.forEach(item => newTotal += parseFloat(item.price));
+        cartModal.querySelector('.cart-total').innerHTML = `<strong>Total: $${newTotal.toFixed(2)}</strong>`;
+    });
+
+    cartModal.querySelector('.cart-checkout-btn').addEventListener('click', async () => {
+        if (cartItems.length === 0) {
+            showNotification('Your cart is empty!', 'warning');
+            return;
+        }
+
+        let checkoutTotal = 0;
+        cartItems.forEach(item => checkoutTotal += parseFloat(item.price));
+
+        const itemName = cartItems.length === 1
+            ? `${cartItems[0].name} (Size ${cartItems[0].size})`
+            : `Order — ${cartItems.length} items`;
+
+        cartModal.classList.remove('show');
+        setTimeout(() => cartModal.remove(), 300);
+
+        await startPayment(checkoutTotal, itemName); // <-- the missing call
+    });
+
+    setTimeout(() => cartModal.classList.add('show'), 10);
+}
+
+        function removeFromCart(id) {
+            cartItems = cartItems.filter(item => item.id !== id);
+            updateCartCount();
+            showNotification('Item removed from cart.', 'info', 1500);
+        }
         // --- contact modal ---
         contactBtn.addEventListener('click', () => {
             contactModal.style.display = 'flex';
@@ -789,37 +845,174 @@
             });
 
             document.querySelectorAll('.ad-banner').forEach(banner => {
-                banner.classList.toggle('is-hidden-by-filter', isFiltering);
+                banner.classList.toggle('is-hidden-by-filter', isFiltering)
             });
 
             searchNoResults.hidden = totalVisible !== 0;
         }
 
-        // --- signup ---
-        const signupInput = document.querySelector('#signup input[type="text"]');
-        const signupButton = document.querySelector('#signup button');
+       // --- signup / login (real Supabase Auth) ---
+        const authEmailInput = document.getElementById('auth-email');
+        const authPasswordInput = document.getElementById('auth-password');
+        const authSignupBtn = document.getElementById('auth-signup-btn');
+        const authLoginBtn = document.getElementById('auth-login-btn');
+        const authLogoutBtn = document.getElementById('auth-logout-btn');
+        const authStatus = document.getElementById('auth-status');
 
-        signupButton.addEventListener('click', (e) => {
-            e.preventDefault();
-            const email = signupInput.value.trim();
+        function setLoggedIn(email) {
+            isSignedUp = true;
+            authEmailInput.style.display = 'none';
+            authPasswordInput.style.display = 'none';
+            authSignupBtn.style.display = 'none';
+            authLoginBtn.style.display = 'none';
+            authLogoutBtn.style.display = 'inline-block';
+            authStatus.textContent = `Signed in as ${email}`;
+        }
 
-            if (email && email.includes('@')) {
+        function setLoggedOut() {
+            isSignedUp = false;
+            currentUser = null;
+            authEmailInput.style.display = 'inline-block';
+            authPasswordInput.style.display = 'inline-block';
+            authSignupBtn.style.display = 'inline-block';
+            authLoginBtn.style.display = 'inline-block';
+            authLogoutBtn.style.display = 'none';
+            authStatus.textContent = '';
+            authEmailInput.value = '';
+            authPasswordInput.value = '';
+        }
+
+        authSignupBtn.addEventListener('click', async () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!email || !password) { showNotification('Enter email and password.', 'warning'); return; }
+
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) { showNotification(error.message, 'error'); return; }
+            if (data.session) {
+                showNotification('Account created — you are logged in!', 'success');
+            } else {
+                showNotification('Check your email to confirm your account.', 'info', 6000);
+            }
+        });
+
+        authLoginBtn.addEventListener('click', async () => {
+            const email = authEmailInput.value.trim();
+            const password = authPasswordInput.value;
+            if (!email || !password) { showNotification('Enter email and password.', 'warning'); return; }
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) { showNotification(error.message, 'error'); return; }
+            showNotification(`Welcome back, ${data.user.email}!`, 'success');
+        });
+
+        authLogoutBtn.addEventListener('click', async () => {
+            await supabaseClient.auth.signOut();
+            showNotification('Logged out.', 'info');
+        });
+
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
                 isSignedUp = true;
-                signupInput.value = '';
-                signupButton.textContent = '✓ Signed Up';
-                signupButton.style.backgroundColor = '#28a745';
-
+                currentUser = session.user;
+                setLoggedIn(session.user.email);
                 if (pendingCartItem) {
                     cartItems.push({ ...pendingCartItem, id: Date.now() });
                     updateCartCount();
-                    showNotification(`Welcome! ${pendingCartItem.name} (size ${pendingCartItem.size}) was added to your cart.`, 'success');
+                    showNotification(`${pendingCartItem.name} (size ${pendingCartItem.size}) added to cart!`, 'success');
                     pendingCartItem = null;
-                } else {
-                    showNotification("Welcome! You're signed up. You can now add items to cart.", 'success');
                 }
-            } else {
-                showNotification('Please enter a valid email address.', 'error');
             }
+            if (event === 'SIGNED_OUT') {
+                setLoggedOut();
+                document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data.session) {
+                isSignedUp = true;
+                currentUser = data.session.user;
+                setLoggedIn(data.session.user.email);
+            }
+        });
+
+        // Restore session on page load
+        supabaseClient.auth.getSession().then(({ data }) => {
+            if (data.session) {
+                isSignedUp = true;
+                currentUser = data.session.user;
+                setAuthSignedIn(data.session.user.email);
+            } else {
+                setAuthMode('login');
+            }
+        });
+        async function startPayment(amount, itemName) {
+            const { data: sessionData } = await supabaseClient.auth.getSession();
+            const token = sessionData.session?.access_token;
+
+            if (!token) {
+                showNotification('Please log in before checking out.', 'warning');
+                document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
+                return;
+            }
+
+            showNotification('Redirecting you to PayFast…', 'info');
+
+            let res;
+            try {
+                res = await fetch('/api/payments/initiate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                    body: JSON.stringify({ amount, item_name: itemName }),
+                });
+            } catch (err) {
+                console.error('Network error reaching /api/payments/initiate:', err);
+                showNotification('Could not reach the payment server.', 'error');
+                return;
+            }
+
+            if (!res.ok) {
+                const errText = await res.text();
+                console.error('Payment initiation failed:', res.status, errText);
+                showNotification('Could not start checkout. Please try again.', 'error');
+                return;
+            }
+
+            const { paymentUrl, paymentData } = await res.json();
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = paymentUrl;
+
+            Object.entries(paymentData).forEach(([key, value]) => {
+                if (value === '' || value === null || value === undefined) return; // skip empty — must match what was signed
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = value;
+                form.appendChild(input);
+            });
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+        // cursor glow — signup section only
+        const signupSection = document.getElementById('signup');
+        const cursorGlow = document.getElementById('cursor-glow');
+
+        document.addEventListener('mousemove', (e) => {
+            const rect = signupSection.getBoundingClientRect();
+            const inside = e.clientY >= rect.top && e.clientY <= rect.bottom;
+            cursorGlow.style.opacity = inside ? '1' : '0';
+            cursorGlow.style.left = e.clientX + 'px';
+            cursorGlow.style.top = e.clientY + 'px';
+        });
+
+        // reveal password toggle
+        document.getElementById('auth-reveal-btn').addEventListener('click', () => {
+            const input = document.getElementById('auth-password');
+            input.type = input.type === 'password' ? 'text' : 'password';
         });
     </script>
 </body>

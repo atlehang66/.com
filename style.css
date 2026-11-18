@@ -12,150 +12,57 @@ body {
   background: #f8f8f8;
 }
 
-/* Fixed Header/Top section */
+/* Sticky header */
 #top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 16px;
   background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   z-index: 100;
-  position: relative;
-}
-
-#cart-icon  {
-  margin-top: 20px;
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#cart-icon:hover {
-  transform: translateY(-50%) scale(1.1);
-}
-
-.cart-symbol {
-  font-size: 1.5rem;
+  position: sticky;
+  top: 0;
+  padding: 10px 24px;
 }
 
 .cart-count {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border-radius: 50%;
-  width: 24px;
-  height: 24px;
-  display: flex;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e8e5f4;
+  color: #3e347c;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 0.8rem;
-  min-width: 24px;
+  font-size: 0.72rem;
 }
 
-#top header {
+#cart-count[hidden] {
+  display: none;
+}
+
+.brand-title {
   font-size: 1.6rem;
   font-weight: 700;
   color: #111;
   margin: 0;
 }
 
-#top span {
-  display: block;
+.brand {
+  grid-column: 2;
+  justify-self: center;
+  text-align: center;
+}
+
+.brand-tagline {
   font-size: 0.85rem;
-  color: #ffffff;
+  color: #6b6b6b;
   font-weight: 500;
   margin-top: 4px;
-}
-
-/* Button styles */
-.btn {
-  transition: all 0.3s ease;
-  border: 2px solid transparent;
-}
-
-.btn.primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-}
-
-.btn.primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
-}
-
-.btn.outline {
-  background: transparent;
-  color: #667eea;
-  border-color: #667eea;
-}
-
-.btn.outline:hover {
-  background: #667eea;
-  color: white;
-  transform: translateY(-2px);
-}
-
-/* Hero section styles */
-#hero {
-  margin-top: 70px; /* space for the fixed header */
-  background: linear-gradient(135deg, #f7f7f9 0%, #e9eef6 100%);
-  padding: 40px 20px;
-}
-#hero .hero-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  flex-wrap: wrap;
-}
-.hero-copy {
-  flex: 1 1 380px;
-  min-width: 220px;
-}
-.hero-copy h1 {
-  font-size: 2.2rem;
-  margin: 0 0 10px;
-  color: #111;
-}
-.hero-copy .lead {
-  color: #333;
-  margin-bottom: 20px;
-}
-.hero-ctas .btn {
-  display: inline-block;
-  padding: 10px 16px;
-  margin-right: 10px;
-  text-decoration: none;
-  border-radius: 6px;
-  font-weight: 600;
-}
-
-.hero-image {
-  flex: 1 1 380px;
-  min-width: 220px;
-}
-
-.hero-image img {
-  width: 100%;
-  max-width: 500px;
-  height: auto;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-}
-
-.hero-image img:hover {
-  transform: scale(1.05);
-}
-
-@media (max-width: 768px) {
-  #hero .hero-inner { flex-direction: column-reverse; text-align: center; }
-  .hero-image img { width: 80%; max-width: 320px; }
 }
 
 /* =========================================================
@@ -165,35 +72,7 @@ body {
 .products-overview {
   max-width: 1240px;
   margin: 0 auto;
-  padding: 72px 24px 96px;
-}
-
-.section-intro {
-  text-align: center;
-  max-width: 640px;
-  margin: 0 auto 56px;
-}
-
-.section-intro .eyebrow {
-  display: inline-block;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #667eea;
-  margin-bottom: 10px;
-}
-
-.section-intro h2 {
-  font-size: 2.1rem;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 10px;
-}
-
-.section-intro p {
-  color: #666;
-  font-size: 1rem;
+  padding: 36px 24px 72px;
 }
 
 .catalog-root {
@@ -205,6 +84,7 @@ body {
 /* ---- Category section ---- */
 .category-section {
   width: 100%;
+  scroll-margin-top: 100px;
 }
 
 .category-header {
@@ -428,115 +308,101 @@ body {
   .product-card-body {
     padding: 12px;
   }
-  .section-intro h2 {
-    font-size: 1.6rem;
-  }
 }
 
-/* Modern Sign Up Section */
+/* Newsletter signup */
 #signup {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  padding: 60px 20px;
-  text-align: center;
-  color: white;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  max-width: 1160px;
+  margin: 0 auto 72px;
+  padding: 40px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
+  gap: 48px;
+  color: var(--theme-ink, #232323);
+  background: #f0eef9;
+  border: 1px solid #e3e0f0;
+  border-radius: 18px;
+}
+#signup .signup-eyebrow {
+  margin-bottom: 8px;
+  color: #5d50a0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
 }
 #signup h2 {
-  font-size: 2.5rem;
-  margin: 0 0 16px;
-  font-weight: 700;
-  letter-spacing: -0.5px;
+  font-size: clamp(1.8rem, 3vw, 2.5rem);
+  line-height: 1.15;
+  margin-bottom: 12px;
+  color: #171522;
 }
-#signup h3 {
-  font-size: 1.1rem;
-  margin: 8px 0;
-  font-weight: 400;
-  opacity: 0.95;
-  letter-spacing: 0.3px;
+#signup .signup-description {
+  max-width: 420px;
+  color: #555164;
 }
-#signup h5 {
-  font-size: 0.95rem;
-  margin: 12px 0 0;
-  font-weight: 500;
-  opacity: 0.85;
+#signup-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 650;
 }
-#signup form {
+#signup .signup-form-row {
   display: flex;
-  gap: 12px;
-  justify-content: center;
-  align-items: center;
-  margin-top: 28px;
-  flex-wrap: wrap;
-  max-width: 500px;
-  margin-left: auto;
-  margin-right: auto;
+  gap: 8px;
 }
-#signup .CTA {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-#signup input[type="text"] {
-  padding: 12px 16px;
-  border: none;
+#signup input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  padding: 12px 14px;
+  border: 1px solid #c9c5d8;
   border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  max-width: 300px;
-  background: rgba(255, 255, 255, 0.95);
-  color: #333;
-  transition: all 0.3s ease;
-  outline: none;
+  background: #fff;
+  color: #232323;
+  font: inherit;
 }
-#signup input[type="text"]::placeholder {
-  color: #888;
-}
-#signup input[type="text"]:focus {
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-  transform: scale(1.02);
+#signup input[type="email"]:focus-visible {
+  outline: 2px solid #5d50a0;
+  outline-offset: 2px;
 }
 #signup button {
-  padding: 12px 28px;
-  background: #fff;
-  color: #667eea;
-  border: none;
+  min-height: 44px;
+  padding: 10px 18px;
+  border: 0;
   border-radius: 8px;
+  background: #3e347c;
+  color: #fff;
+  font: inherit;
   font-weight: 700;
-  font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s ease;
   white-space: nowrap;
 }
 #signup button:hover {
-  background: #f0f0f0;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  background: #302762;
 }
-#signup button:active {
-  transform: translateY(0);
+#signup button:focus-visible {
+  outline: 2px solid #23203a;
+  outline-offset: 3px;
+}
+#signup .signup-note {
+  margin-top: 8px;
+  color: #5e5a6b;
+  font-size: 0.8rem;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   #signup {
-    padding: 40px 20px;
-    min-height: auto;
+    margin: 0 18px 56px;
+    padding: 28px 22px;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
-  #signup h2 {
-    font-size: 1.8rem;
-  }
-  #signup form {
+}
+
+@media (max-width: 480px) {
+  #signup .signup-form-row {
     flex-direction: column;
-  }
-  #signup input[type="text"] {
-    max-width: 100%;
-  }
-  #signup button {
-    width: 100%;
   }
 }
 
@@ -578,11 +444,6 @@ body {
 #contact strong:nth-child(5)::before {
   content: "📍 ";
   margin-right: 6px;
-}
-
-/* Add spacing for bottom of page */
-body {
-  padding-bottom: 140px;
 }
 
 /* Product Preview Modal Styles */
@@ -927,18 +788,6 @@ body {
     width: 95%;
   }
 }
-/* =========================================================
-   ADD EVERYTHING BELOW THIS LINE TO YOUR EXISTING style.css
-   (This was previously an inline <style> block in the HTML.
-   It has been moved here, and includes these fixes:
-     1. Contact + search icon buttons no longer overlap.
-     2. Cart icon now shares the same button style (padding,
-        radius, hover state) as contact + search.
-     3. Emoji glyphs replaced with inline SVG icons, so new
-        .icon rules are included to size/color them.
-   --theme-ink is the one color most of this uses — change it
-   to your real brand color and everything below matches.
-========================================================= */
 :root {
     --theme-ink: #232323;
     --theme-ink-soft: #6b6b6b;
@@ -948,19 +797,84 @@ body {
 
 /* --- top bar: cart + contact + search --- */
 .top-actions {
-    position: absolute;
-    top: 12px;
-    right: 20px;
+    grid-column: 3;
+    justify-self: end;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 4px;
+}
+.header-left {
+    grid-column: 1;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+.shop-menu {
+    position: relative;
     z-index: 110;
 }
-.top-actions #cart-icon { position: static; }
+.shop-menu > summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 8px;
+    border-radius: 8px;
+    color: var(--theme-ink);
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+.shop-menu > summary::-webkit-details-marker { display: none; }
+.shop-menu > summary:hover,
+.shop-menu > summary:focus-visible,
+.shop-menu[open] > summary {
+    background: rgba(0, 0, 0, 0.06);
+}
+.shop-menu > summary:focus-visible {
+    outline: 2px solid var(--theme-ink);
+    outline-offset: 2px;
+}
+.shop-menu .category-nav {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 190px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    margin: 0;
+    padding: 8px;
+    border: 1px solid var(--theme-line);
+    border-radius: 10px;
+    background: var(--theme-surface);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+.shop-menu .category-pill {
+    border-color: transparent;
+    border-radius: 6px;
+}
+.shop-menu .category-pill:hover,
+.shop-menu .category-pill:focus-visible {
+    background: #f0eef9;
+    color: var(--theme-ink);
+}
+.top-actions #cart-icon {
+    position: static;
+    margin: 0;
+    transform: none;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--theme-line);
+    border-radius: 999px;
+    background: var(--theme-surface);
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
 
-/* Contact + search icon buttons sit at top-left, fixed, with a
-   set left offset each (instead of relying on padding to push
-   them apart) so their click targets never overlap. */
+/* Keep the header icon controls in one aligned action group. */
 .contact-btn,
 .search-toggle-btn,
 #cart-icon {
@@ -971,27 +885,50 @@ body {
     cursor: pointer;
     background: transparent;
     border: none;
-    outline: none;
     box-shadow: none;
     color: var(--theme-ink);
     padding: 8px;
+    min-width: 44px;
+    min-height: 44px;
     border-radius: 6px;
+    font: inherit;
+    transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
 }
 .contact-btn,
 .search-toggle-btn {
-    position: fixed;
-    top: 12px;
-    z-index: 1000;
+    position: static;
 }
-.contact-btn:hover,
-.search-toggle-btn:hover,
-#cart-icon:hover,
 .contact-btn:focus-visible,
-.search-toggle-btn:focus-visible {
+.search-toggle-btn:focus-visible,
+#cart-icon:focus-visible,
+.top-actions #cart-icon:focus-visible {
     background: rgba(0, 0, 0, 0.06);
+    outline: 2px solid var(--theme-ink);
+    outline-offset: 2px;
 }
-.contact-btn { left: 12px; }
-.search-toggle-btn { left: 56px; } /* 44px clear of contact-btn's icon + padding */
+.cart-label {
+    font-size: 0.86rem;
+    font-weight: 650;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .contact-btn:hover,
+    .search-toggle-btn:hover,
+    .shop-menu > summary:hover {
+        background: #eceaf2;
+        color: #3e347c;
+    }
+    .top-actions #cart-icon:hover {
+        border-color: #3e347c;
+        background: #3e347c;
+        color: #fff;
+        transform: translateY(-1px);
+    }
+    .top-actions #cart-icon:hover .cart-count {
+        background: #fff;
+        color: #3e347c;
+    }
+}
 
 /* Inline SVG icon sizing — used by contact, search, and cart */
 .icon {
@@ -1077,7 +1014,13 @@ body {
     75% { transform: translateX(4px); }
 }
 
-/* --- payment methods strip (footer) --- */
+/* --- payment methods footer --- */
+.payment-methods {
+    background: #f1f1f1;
+    padding: 16px 20px;
+    text-align: center;
+    border-top: 1px solid var(--theme-line);
+}
 .payment-eyebrow {
     margin: 0 0 8px;
     font-size: 0.7rem;
@@ -1094,6 +1037,18 @@ body {
 }
 .payment-logo { color: var(--theme-ink); }
 .payment-logo svg { height: 26px; width: auto; display: block; }
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
 
 .cart-item-size { color: var(--theme-ink-soft); font-size: 0.85em; }
 
@@ -1165,4 +1120,45 @@ body {
 .product-card.is-filtered-out,
 .ad-banner.is-hidden-by-filter {
     display: none;
+}
+
+@media (max-width: 700px) {
+    #top {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        gap: 4px;
+        padding: 8px;
+    }
+    .header-left {
+        grid-column: 1;
+        grid-row: 1;
+    }
+    .brand { grid-column: 2; grid-row: 1; }
+    .top-actions {
+        grid-column: 3;
+        grid-row: 1;
+        gap: 2px;
+    }
+    .shop-menu .category-nav { min-width: min(250px, calc(100vw - 24px)); }
+}
+
+@media (max-width: 480px) {
+    .brand-title { font-size: 1rem; }
+    .brand-tagline { display: none; }
+    .cart-label { display: none; }
+    .top-actions #cart-icon {
+        position: relative;
+        width: 44px;
+        min-width: 44px;
+        padding: 8px;
+    }
+    .cart-count {
+        position: absolute;
+        top: -2px;
+        right: -4px;
+        min-width: 18px;
+        height: 18px;
+        padding: 0 4px;
+        border: 2px solid var(--theme-surface);
+        font-size: 0.65rem;
+    }
 }

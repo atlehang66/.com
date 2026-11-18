@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en-ZA">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f5f4f0">
+    <link rel="stylesheet" href="style.css">
+    <title>Checkout preview | Men's Fashion</title>
+</head>
+<body class="checkout-page">
+    <header class="checkout-header">
+        <a class="checkout-brand" href="index.html">
+            Men's Fashion
+            <span>THE .COM STORE</span>
+        </a>
+        <p class="checkout-header-label">Checkout preview <span>DEMO ONLY</span></p>
+    </header>
+
+    <main class="checkout-shell">
+        <div class="checkout-heading">
+            <a class="checkout-back" href="index.html#cart">← Back to cart</a>
+            <h1>Checkout</h1>
+            <p>Enter your details to preview the checkout experience.</p>
+            <ol class="checkout-steps" aria-label="Checkout progress">
+                <li><span>01</span> Cart</li>
+                <li class="is-current" aria-current="step"><span>02</span> Details</li>
+                <li><span>03</span> Complete</li>
+            </ol>
+        </div>
+
+        <section id="checkout-empty" class="checkout-empty" hidden aria-live="polite">
+            <h2>Checkout unavailable</h2>
+            <p></p>
+            <a class="checkout-button checkout-empty-button" href="index.html">Return to the store</a>
+        </section>
+
+        <div id="checkout-layout" class="checkout-layout">
+            <form id="checkout-form" class="checkout-form">
+                <section class="checkout-card" aria-labelledby="contact-heading">
+                    <div class="checkout-section-title">
+                        <span>01</span>
+                        <div>
+                            <h2 id="contact-heading">Contact</h2>
+                            <p>Order updates will be sent to this email.</p>
+                        </div>
+                    </div>
+                    <label class="checkout-field checkout-field-full">
+                        Email address
+                        <input type="email" name="email" autocomplete="email" placeholder="you@example.com" required>
+                    </label>
+                </section>
+
+                <section class="checkout-card" aria-labelledby="delivery-heading">
+                    <div class="checkout-section-title">
+                        <span>02</span>
+                        <div>
+                            <h2 id="delivery-heading">Delivery details</h2>
+                            <p>Where should your order go?</p>
+                        </div>
+                    </div>
+                    <div class="checkout-field-grid">
+                        <label class="checkout-field checkout-field-full">
+                            Full name
+                            <input type="text" name="name" autocomplete="name" placeholder="Full name" required>
+                        </label>
+                        <label class="checkout-field checkout-field-full">
+                            Street address
+                            <input type="text" name="address" autocomplete="street-address" placeholder="Street address" required>
+                        </label>
+                        <label class="checkout-field checkout-field-full">
+                            Apartment, suite, etc. <span>(optional)</span>
+                            <input type="text" name="address2" autocomplete="address-line2" placeholder="Unit, floor, or building">
+                        </label>
+                        <label class="checkout-field checkout-field-full">
+                            Country / region
+                            <input type="text" value="South Africa" autocomplete="country-name" readonly>
+                        </label>
+                        <label class="checkout-field">
+                            City
+                            <input type="text" name="city" autocomplete="address-level2" placeholder="City" required>
+                        </label>
+                        <label class="checkout-field">
+                            Province
+                            <select name="province" autocomplete="address-level1" required>
+                                <option value="">Select province</option>
+                                <option>Eastern Cape</option>
+                                <option>Free State</option>
+                                <option>Gauteng</option>
+                                <option>KwaZulu-Natal</option>
+                                <option>Limpopo</option>
+                                <option>Mpumalanga</option>
+                                <option>Northern Cape</option>
+                                <option>North West</option>
+                                <option>Western Cape</option>
+                            </select>
+                        </label>
+                        <label class="checkout-field">
+                            Postal code
+                            <input type="text" name="postalCode" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" placeholder="0000" required>
+                        </label>
+                        <label class="checkout-field">
+                            Phone <span>(optional)</span>
+                            <input type="tel" name="phone" autocomplete="tel" placeholder="+27">
+                        </label>
+                    </div>
+                </section>
+
+                <section class="checkout-card" aria-labelledby="payment-heading">
+                    <div class="checkout-section-title">
+                        <span>03</span>
+                        <div>
+                            <h2 id="payment-heading">Payment</h2>
+                            <p>Payment selection shown for the design preview.</p>
+                        </div>
+                    </div>
+                    <div class="checkout-payment-choice">
+                        <span class="checkout-payment-mark" aria-hidden="true">PF</span>
+                        <div>
+                            <strong>PayFast</strong>
+                            <p>Cards, Instant EFT and supported digital wallets</p>
+                        </div>
+                        <span class="checkout-selected">Selected</span>
+                    </div>
+                    <p class="checkout-demo-note">PayFast is not connected here. No payment will be taken and your details are not saved.</p>
+                </section>
+            </form>
+
+            <aside class="checkout-summary" aria-labelledby="summary-heading">
+                <div class="checkout-summary-heading">
+                    <h2 id="summary-heading">Your order</h2>
+                    <span id="checkout-item-count"></span>
+                </div>
+                <ul id="checkout-items" class="checkout-items"></ul>
+                <div class="checkout-totals">
+                    <div class="checkout-total-row">
+                        <span>Subtotal</span>
+                        <strong id="checkout-subtotal"></strong>
+                    </div>
+                    <div class="checkout-total-row">
+                        <span>Shipping</span>
+                        <span>Not calculated</span>
+                    </div>
+                    <div class="checkout-total-row checkout-grand-total">
+                        <span>Total before shipping</span>
+                        <strong id="checkout-total"></strong>
+                    </div>
+                </div>
+                <p class="checkout-rate-note">Converted from catalog USD at the prototype rate of $1 = R16.45. This is not a live exchange rate.</p>
+                <button class="checkout-button" type="submit" form="checkout-form">Complete checkout (demo)</button>
+                <p class="checkout-shipping-note">Shipping is not calculated in this prototype.</p>
+            </aside>
+        </div>
+    </main>
+
+    <dialog id="checkout-confirmation" class="checkout-dialog" aria-labelledby="checkout-dialog-title">
+        <div class="checkout-dialog-content">
+            <p class="checkout-dialog-kicker">Preview complete</p>
+            <h2 id="checkout-dialog-title">No order was placed</h2>
+            <p>This is a visual prototype. No payment was processed and your details were not saved.</p>
+            <button id="checkout-dialog-close" class="checkout-button" type="button">Back to checkout</button>
+        </div>
+    </dialog>
+
+    <script>
+        const CART_STORAGE_KEY = 'com-checkout-cart';
+        const USD_TO_ZAR = 16.45;
+        const checkoutLayout = document.getElementById('checkout-layout');
+        const emptyState = document.getElementById('checkout-empty');
+
+        function showEmptyState(message) {
+            checkoutLayout.hidden = true;
+            emptyState.hidden = false;
+            emptyState.querySelector('p').textContent = message;
+        }
+
+        let cartItems;
+        try {
+            const saved = sessionStorage.getItem(CART_STORAGE_KEY);
+            cartItems = saved ? JSON.parse(saved) : [];
+            if (!Array.isArray(cartItems) || cartItems.some(item =>
+                !item ||
+                typeof item.name !== 'string' ||
+                typeof item.size !== 'string' ||
+                !['string', 'number'].includes(typeof item.price) ||
+                !Number.isFinite(Number(item.price)) ||
+                Number(item.price) < 0
+            )) {
+                throw new Error('Saved cart data is invalid.');
+            }
+        } catch (error) {
+            console.error('Unable to load the checkout cart.', error);
+            showEmptyState('We could not load your saved cart. Return to the store and try again.');
+        }
+
+        if (cartItems && cartItems.length === 0) {
+            showEmptyState('Your cart is empty. Add an item before continuing to checkout.');
+        } else if (cartItems) {
+            const formatZar = amount => new Intl.NumberFormat('en-ZA', {
+                style: 'currency',
+                currency: 'ZAR'
+            }).format(amount);
+            const toZar = usd => Math.round((Number(usd) * USD_TO_ZAR + Number.EPSILON) * 100) / 100;
+            const itemList = document.getElementById('checkout-items');
+            const subtotal = cartItems.reduce((sum, item) => {
+                const itemTotal = toZar(item.price);
+                const row = document.createElement('li');
+                row.className = 'checkout-item';
+
+                const description = document.createElement('div');
+                description.className = 'checkout-item-description';
+                const name = document.createElement('strong');
+                name.textContent = item.name;
+                const size = document.createElement('span');
+                size.textContent = `Size ${item.size}`;
+                description.append(name, size);
+
+                const price = document.createElement('strong');
+                price.className = 'checkout-item-price';
+                price.textContent = formatZar(itemTotal);
+                row.append(description, price);
+                itemList.appendChild(row);
+                return sum + itemTotal;
+            }, 0);
+
+            document.getElementById('checkout-item-count').textContent =
+                `${cartItems.length} ${cartItems.length === 1 ? 'item' : 'items'}`;
+            document.getElementById('checkout-subtotal').textContent = formatZar(subtotal);
+            document.getElementById('checkout-total').textContent = formatZar(subtotal);
+        }
+
+        const checkoutForm = document.getElementById('checkout-form');
+        const confirmation = document.getElementById('checkout-confirmation');
+        checkoutForm.addEventListener('submit', event => {
+            event.preventDefault();
+            if (!checkoutForm.reportValidity()) return;
+            confirmation.showModal();
+        });
+        document.getElementById('checkout-dialog-close').addEventListener('click', () => confirmation.close());
+        confirmation.addEventListener('click', event => {
+            if (event.target === confirmation) confirmation.close();
+        });
+    </script>
+</body>
+</html>

@@ -493,8 +493,46 @@
            A size must be picked before anything reaches the cart —
            see attemptAddToCart().
         ========================================================= */
+        const CART_STORAGE_KEY = 'com-checkout-cart';
+        function loadCartFromSession() {
+            const saved = sessionStorage.getItem(CART_STORAGE_KEY);
+            if (!saved) return [];
+
+            const parsed = JSON.parse(saved);
+            const products = PRODUCT_CATALOG.reduce((all, category) => all.concat(category.products), []);
+            if (!Array.isArray(parsed) || parsed.some(item => {
+                const product = item && typeof item.name === 'string'
+                    ? products.find(candidate => candidate.name === item.name)
+                    : null;
+                return !product ||
+                    Number(item.price) !== product.price ||
+                    !SIZE_CHARTS[product.sizeType].options.some(option => option.size === item.size);
+            })) {
+                throw new Error('Saved cart data is invalid.');
+            }
+            return parsed;
+        }
+
+        function persistCart() {
+            try {
+                sessionStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cartItems));
+                return true;
+            } catch (error) {
+                console.error('Unable to save the cart for checkout.', error);
+                showNotification('Your cart could not be saved for checkout. Please try again.', 'error');
+                return false;
+            }
+        }
+
         let isSignedUp = false;
+        let cartStorageError = false;
         let cartItems = [];
+        try {
+            cartItems = loadCartFromSession();
+        } catch (error) {
+            cartStorageError = true;
+            console.error('Unable to restore the saved cart.', error);
+        }
         let cartAfterSignup = false;
         let signupPromptDismissed = false;
         let addToCartInProgress = false;
@@ -680,6 +718,7 @@
                 if (closeModalAfter) modal.style.display = 'none';
 
                 cartItems.push({ name: card.dataset.product, price: card.dataset.price, size, id: Date.now() });
+                persistCart();
                 updateCartCount();
 
                 if (!isSignedUp && !signupPromptDismissed) {
@@ -701,6 +740,10 @@
                     ? 'View cart, empty'
                     : `View cart, ${cartItems.length} ${cartItems.length === 1 ? 'item' : 'items'}`
             );
+        }
+        updateCartCount();
+        if (cartStorageError) {
+            showNotification('Your saved cart could not be restored. Please add your items again.', 'error');
         }
 
         cartIcon.addEventListener('click', () => {
@@ -744,8 +787,8 @@
             });
 
             cartModal.querySelector('.cart-checkout-btn').addEventListener('click', () => {
-                showNotification('Proceeding to checkout...', 'success');
-                cartModal.close();
+                if (!persistCart()) return;
+                window.location.href = 'checkout.html';
             });
 
             cartModal.addEventListener('click', (e) => {
@@ -849,6 +892,8 @@
                 if (form === signupDialogForm) signupDialog.close();
             });
         });
+
+        if (window.location.hash === '#cart' && cartItems.length) showCartModal();
     </script>
 </body>
 </html>

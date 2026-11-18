@@ -214,6 +214,30 @@ body {
   outline-offset: 3px;
 }
 
+.add-to-cart-btn.is-loading,
+.preview-add-to-cart.is-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: wait;
+}
+
+.add-to-cart-btn.is-loading::before,
+.preview-add-to-cart.is-loading::before {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: add-to-cart-spin 0.65s linear infinite;
+}
+
+@keyframes add-to-cart-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ---- Ad / promotional banner (visually distinct from product cards) ---- */
 .ad-banner {
   position: relative;
@@ -419,6 +443,154 @@ body {
 @media (max-width: 480px) {
   #signup .signup-form-row {
     flex-direction: column;
+  }
+}
+
+.signup-dialog {
+  width: min(440px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 18px;
+  background: #f0eef9;
+  color: var(--theme-ink, #232323);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.25);
+  overflow-y: auto;
+}
+
+.signup-dialog::backdrop {
+  background: rgba(18, 17, 24, 0.58);
+  backdrop-filter: blur(3px);
+}
+
+.signup-dialog-content {
+  position: relative;
+  padding: 32px;
+}
+
+.signup-dialog-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: #555164;
+  font-size: 1.6rem;
+  cursor: pointer;
+}
+
+.signup-dialog-close:hover {
+  background: rgba(35, 35, 35, 0.08);
+}
+
+.signup-dialog :focus-visible {
+  outline: 2px solid #5d50a0;
+  outline-offset: 3px;
+}
+
+.signup-dialog-eyebrow {
+  margin: 0 0 8px;
+  color: #5d50a0;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.signup-dialog h2 {
+  margin: 0 40px 12px 0;
+  color: #171522;
+  font-size: clamp(1.7rem, 6vw, 2.2rem);
+  line-height: 1.15;
+}
+
+.signup-dialog-description {
+  margin: 0 0 22px;
+  color: #555164;
+  line-height: 1.5;
+}
+
+.signup-dialog-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.signup-dialog-form .signup-form-row {
+  display: flex;
+  gap: 8px;
+}
+
+.signup-dialog-form input[type="email"] {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #c9c5d8;
+  border-radius: 8px;
+  background: #fff;
+  color: #232323;
+  font: inherit;
+}
+
+.signup-dialog-form button[type="submit"] {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: #3e347c;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.signup-dialog-form button[type="submit"]:hover {
+  background: #302762;
+}
+
+.signup-dialog-note {
+  margin: 8px 0 0;
+  color: #5e5a6b;
+  font-size: 0.8rem;
+}
+
+.signup-dialog-skip {
+  width: 100%;
+  min-height: 44px;
+  margin-top: 12px;
+  padding: 8px;
+  border: 0;
+  background: transparent;
+  color: #454154;
+  font: inherit;
+  font-size: 0.85rem;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 480px) {
+  .signup-dialog-content {
+    padding: 28px 22px 22px;
+  }
+
+  .signup-dialog-form .signup-form-row {
+    flex-direction: column;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .add-to-cart-btn.is-loading::before,
+  .preview-add-to-cart.is-loading::before {
+    animation: none;
   }
 }
 
@@ -674,31 +846,32 @@ body {
 /* Cart Modal */
 .cart-modal {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1500;
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  inset: 0;
+  width: min(500px, calc(100vw - 32px));
+  max-width: none;
+  max-height: 80vh;
+  max-height: 80dvh;
+  margin: auto;
+  padding: 0;
+  border: 0;
+  border-radius: 16px;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
 }
 
-.cart-modal.show {
-  opacity: 1;
+.cart-modal::backdrop {
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .cart-modal-content {
   background: white;
-  border-radius: 16px;
-  max-width: 500px;
-  width: 90%;
+  width: 100%;
   max-height: 80vh;
+  max-height: 80dvh;
   overflow-y: auto;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 16px;
   animation: slideUpCart 0.3s ease;
 }
 
@@ -715,7 +888,7 @@ body {
   border-bottom: 1px solid #e9ecef;
 }
 
-.cart-modal-header h3 {
+.cart-modal-header h2 {
   margin: 0;
   font-size: 1.3rem;
   color: #111;
@@ -723,17 +896,27 @@ body {
 }
 
 .cart-close-btn {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
   font-size: 24px;
   color: #999;
   cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
   transition: color 0.3s ease;
 }
 
 .cart-close-btn:hover {
   color: #333;
+}
+
+.cart-close-btn:focus-visible {
+  outline: 2px solid #292a27;
+  outline-offset: 2px;
 }
 
 .cart-items {
@@ -768,7 +951,7 @@ body {
   width: calc(100% - 40px);
   margin: 16px 20px 20px;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #07080e 0%, #35006c 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #200141 100%);
   border: none;
   border-radius: 8px;
   font-weight: 700;
@@ -800,7 +983,7 @@ body {
   }
 
   .cart-modal-content {
-    width: 95%;
+    width: 100%;
   }
 }
 :root {

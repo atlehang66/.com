@@ -86,6 +86,24 @@
         </section>
     </main>
 
+    <dialog id="signup-dialog" class="signup-dialog" aria-labelledby="signup-dialog-title">
+        <div class="signup-dialog-content">
+            <button id="signup-dialog-close" class="signup-dialog-close" type="button" aria-label="Close signup dialog">&times;</button>
+            <p class="signup-dialog-eyebrow">The .com list</p>
+            <h2 id="signup-dialog-title">Good finds, first.</h2>
+            <p class="signup-dialog-description">Get early access to new arrivals and members-only offers. You can continue to your cart without signing up.</p>
+            <form id="signup-dialog-form" class="signup-dialog-form">
+                <label for="signup-dialog-email">Your email address</label>
+                <div class="signup-form-row">
+                    <input id="signup-dialog-email" type="email" placeholder="you@example.com" autocomplete="email" required>
+                    <button type="submit">Join &amp; view cart</button>
+                </div>
+                <p class="signup-dialog-note">Unsubscribe any time. We respect your inbox.</p>
+                <button id="signup-dialog-continue" class="signup-dialog-skip" type="button">Continue to cart without signing up</button>
+            </form>
+        </div>
+    </dialog>
+
     <footer id="payment-methods" class="payment-methods">
         <ul class="payment-logos" aria-label="PayFast-supported payment options">
             <li class="payment-logo">
@@ -477,7 +495,9 @@
         ========================================================= */
         let isSignedUp = false;
         let cartItems = [];
-        let pendingCartItem = null; // item the user tried to add before signing up
+        let cartAfterSignup = false;
+        let signupPromptDismissed = false;
+        let addToCartInProgress = false;
         let currentCard = null;     // the grid card behind whatever the preview modal is showing
 
         const modal = document.getElementById('preview-modal');
@@ -486,6 +506,8 @@
         const cartCountEl = document.getElementById('cart-count');
         const cartIcon = document.getElementById('cart-icon');
         const catalogRoot = document.getElementById('catalog-root');
+        const signupDialog = document.getElementById('signup-dialog');
+        const signupDialogForm = document.getElementById('signup-dialog-form');
 
         const contactBtn = document.getElementById('contact-btn');
         const contactModal = document.getElementById('contact-modal');
@@ -542,7 +564,7 @@
 
             if (addBtn) {
                 e.stopPropagation();
-                attemptAddToCart(card);
+                attemptAddToCart(card, { trigger: addBtn });
                 return;
             }
 
@@ -623,32 +645,51 @@
         });
 
         previewCartBtn.addEventListener('click', () => {
-            if (currentCard) attemptAddToCart(currentCard, { closeModalAfter: true });
+            if (currentCard) attemptAddToCart(currentCard, { closeModalAfter: true, trigger: previewCartBtn });
         });
 
-        function attemptAddToCart(card, { closeModalAfter = false } = {}) {
+        function attemptAddToCart(card, { closeModalAfter = false, trigger } = {}) {
             const size = card.dataset.selectedSize;
             if (!size) {
                 showNotification('Please select a size before adding to cart.', 'warning');
                 flashSizePrompt(card);
                 return;
             }
+            if (addToCartInProgress) return;
 
-            const name = card.dataset.product;
-            const price = card.dataset.price;
-
-            if (!isSignedUp) {
-                pendingCartItem = { name, price, size };
-                modal.style.display = 'none';
-                document.getElementById('signup').scrollIntoView({ behavior: 'smooth' });
-                showNotification(`Sign up below and we'll add ${name} (size ${size}) to your cart automatically!`, 'warning');
-                return;
+            addToCartInProgress = true;
+            const cartWasDisabled = cartIcon.disabled;
+            cartIcon.disabled = true;
+            const originalLabel = trigger ? trigger.textContent : 'Add to Cart';
+            if (trigger) {
+                trigger.disabled = true;
+                trigger.setAttribute('aria-busy', 'true');
+                trigger.classList.add('is-loading');
+                trigger.textContent = 'Adding…';
             }
 
-            cartItems.push({ name, price, size, id: Date.now() });
-            updateCartCount();
-            showNotification(`${name} (size ${size}) added to cart!`, 'success');
-            if (closeModalAfter) modal.style.display = 'none';
+            setTimeout(() => {
+                if (trigger) {
+                    trigger.disabled = false;
+                    trigger.removeAttribute('aria-busy');
+                    trigger.classList.remove('is-loading');
+                    trigger.textContent = originalLabel;
+                }
+                addToCartInProgress = false;
+                cartIcon.disabled = cartWasDisabled;
+                if (closeModalAfter) modal.style.display = 'none';
+
+                cartItems.push({ name: card.dataset.product, price: card.dataset.price, size, id: Date.now() });
+                updateCartCount();
+
+                if (!isSignedUp && !signupPromptDismissed) {
+                    cartAfterSignup = true;
+                    signupDialog.showModal();
+                    signupDialog.querySelector('input[type="email"]').focus();
+                } else {
+                    showCartModal();
+                }
+            }, 350);
         }
 
         function updateCartCount() {
@@ -667,25 +708,27 @@
                 showNotification('Your cart is empty!', 'info');
                 return;
             }
-            let total = 0;
-            cartItems.forEach(item => total += parseFloat(item.price));
-            showCartModal(total);
+            showCartModal();
         });
 
-        function showCartModal(total) {
-            const cartModal = document.createElement('div');
+        function showCartModal() {
+            const cartModal = document.createElement('dialog');
             cartModal.className = 'cart-modal';
+            const titleId = `cart-title-${Date.now()}`;
+            cartModal.setAttribute('aria-labelledby', titleId);
 
             let itemsHTML = '';
+            let total = 0;
             cartItems.forEach((item, index) => {
                 itemsHTML += `<div class="cart-item"><span>${index + 1}. ${item.name} <span class="cart-item-size">(Size ${item.size})</span></span><span>$${item.price}</span></div>`;
+                total += parseFloat(item.price);
             });
 
             cartModal.innerHTML = `
                 <div class="cart-modal-content">
                     <div class="cart-modal-header">
-                        <h3>Your Cart</h3>
-                        <span class="cart-close-btn">&times;</span>
+                        <h2 id="${titleId}">Your Cart</h2>
+                        <button class="cart-close-btn" type="button" aria-label="Close cart">&times;</button>
                     </div>
                     <div class="cart-items">${itemsHTML}</div>
                     <div class="cart-total"><strong>Total: $${total.toFixed(2)}</strong></div>
@@ -694,19 +737,21 @@
             `;
 
             document.body.appendChild(cartModal);
+            cartModal.addEventListener('close', () => cartModal.remove(), { once: true });
 
             cartModal.querySelector('.cart-close-btn').addEventListener('click', () => {
-                cartModal.classList.remove('show');
-                setTimeout(() => cartModal.remove(), 300);
+                cartModal.close();
             });
 
             cartModal.querySelector('.cart-checkout-btn').addEventListener('click', () => {
                 showNotification('Proceeding to checkout...', 'success');
-                cartModal.classList.remove('show');
-                setTimeout(() => cartModal.remove(), 300);
+                cartModal.close();
             });
 
-            setTimeout(() => cartModal.classList.add('show'), 10);
+            cartModal.addEventListener('click', (e) => {
+                if (e.target === cartModal) cartModal.close();
+            });
+            cartModal.showModal();
         }
 
         // --- contact modal ---
@@ -777,30 +822,32 @@
 
         // --- signup ---
         const signupForm = document.getElementById('signup-form');
-        const signupInput = document.getElementById('signup-email');
-        const signupButton = signupForm.querySelector('button');
+        signupDialog.addEventListener('close', () => {
+            if (!cartAfterSignup) return;
+            cartAfterSignup = false;
+            if (!isSignedUp) signupPromptDismissed = true;
+            showCartModal();
+        });
+        document.getElementById('signup-dialog-close').addEventListener('click', () => signupDialog.close());
+        document.getElementById('signup-dialog-continue').addEventListener('click', () => signupDialog.close());
+        signupDialog.addEventListener('click', (e) => {
+            if (e.target === signupDialog) signupDialog.close();
+        });
 
-        signupForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = signupInput.value.trim();
-
-            if (email && email.includes('@')) {
-                isSignedUp = true;
-                signupInput.value = '';
-                signupButton.textContent = '✓ Signed Up';
-                signupButton.style.backgroundColor = '#28a745';
-
-                if (pendingCartItem) {
-                    cartItems.push({ ...pendingCartItem, id: Date.now() });
-                    updateCartCount();
-                    showNotification(`Welcome! ${pendingCartItem.name} (size ${pendingCartItem.size}) was added to your cart.`, 'success');
-                    pendingCartItem = null;
-                } else {
-                    showNotification("Welcome! You're signed up. You can now add items to cart.", 'success');
+        [signupForm, signupDialogForm].forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const input = form.querySelector('input[type="email"]');
+                if (!input.checkValidity()) {
+                    input.reportValidity();
+                    return;
                 }
-            } else {
-                showNotification('Please enter a valid email address.', 'error');
-            }
+
+                isSignedUp = true;
+                [signupForm, signupDialogForm].forEach(signup => signup.reset());
+                showNotification("Welcome! You're signed up.", 'success');
+                if (form === signupDialogForm) signupDialog.close();
+            });
         });
     </script>
 </body>

@@ -119,27 +119,29 @@ body {
 }
 
 .product-card {
-  background: #ffffff;
-  border: 1px solid #ececec;
-  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e7e4dd;
+  border-radius: 14px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 16px 32px rgba(12, 13, 14, 0.1);
-  border-color: #e2e2f5;
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 26px rgba(35, 32, 24, 0.09);
+    border-color: #d7d1c5;
+  }
 }
 
 .product-card-media {
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #f4f4f6;
+  background: #f4f2ed;
 }
 
 .product-card-media img {
@@ -147,55 +149,69 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.4s ease;
+  transition: transform 0.35s ease;
 }
 
-.product-card:hover .product-card-media img {
-  transform: scale(1.08);
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover .product-card-media img {
+    transform: scale(1.035);
+  }
 }
 
 .product-card-body {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 8px 10px;
   padding: 16px;
   flex: 1;
 }
 
 .product-card-name {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #111;
-  line-height: 1.3;
+  grid-column: 1;
+  font-size: 0.98rem;
+  font-weight: 650;
+  color: #24231f;
+  line-height: 1.35;
 }
 
 .product-card-price {
-  font-size: 0.98rem;
+  grid-column: 2;
+  grid-row: 1;
+  color: #24231f;
+  font-size: 0.95rem;
   font-weight: 700;
-  color: #667eea;
-  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.product-card .size-block,
+.product-card .add-to-cart-btn {
+  grid-column: 1 / -1;
 }
 
 .add-to-cart-btn {
-  margin-top: auto;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
-  padding: 11px 16px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 0.9rem;
+  align-self: end;
+  margin-top: 6px;
+  min-height: 44px;
+  background: linear-gradient(135deg, #07080e 0%, #1f003f 100%);
+  color: #fff;
+  border: 1px solid #292a27;
+  padding: 10px 16px;
+  border-radius: 7px;
+  font-weight: 650;
+  font-size: 0.88rem;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
 .add-to-cart-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(102, 126, 234, 0.35);
+  background: #3e005b;
+  border-color: #ffffff;
 }
 
-.add-to-cart-btn:active {
-  transform: translateY(0);
+.add-to-cart-btn:focus-visible {
+  outline: 2px solid #292a27;
+  outline-offset: 3px;
 }
 
 /* ---- Ad / promotional banner (visually distinct from product cards) ---- */
@@ -752,8 +768,7 @@ body {
   width: calc(100% - 40px);
   margin: 16px 20px 20px;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: linear-gradient(135deg, #07080e 0%, #35006c 100%);
   border: none;
   border-radius: 8px;
   font-weight: 700;
@@ -1016,27 +1031,44 @@ body {
 
 /* --- payment methods footer --- */
 .payment-methods {
-    background: #f1f1f1;
-    padding: 16px 20px;
+    background: #f4f2ed;
+    padding: 20px;
     text-align: center;
     border-top: 1px solid var(--theme-line);
-}
-.payment-eyebrow {
-    margin: 0 0 8px;
-    font-size: 0.7rem;
-    letter-spacing: .08em;
-    text-transform: uppercase;
-    color: var(--theme-ink-soft);
 }
 .payment-logos {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
     flex-wrap: wrap;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
-.payment-logo { color: var(--theme-ink); }
-.payment-logo svg { height: 26px; width: auto; display: block; }
+.payment-logo {
+    color: var(--theme-ink);
+    line-height: 0;
+}
+.payment-logo svg {
+    display: block;
+    width: 82px;
+    height: 33px;
+    color: inherit;
+}
+.payment-logo rect {
+    fill: #fff;
+    stroke: #e1ddd3;
+}
+.payment-logo text {
+    fill: currentColor;
+    font: 600 11px Arial, sans-serif;
+}
+.payment-note {
+    margin: 10px 0 0;
+    color: var(--theme-ink-soft);
+    font-size: 0.75rem;
+}
 
 .sr-only {
     position: absolute;

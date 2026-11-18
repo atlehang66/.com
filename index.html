@@ -87,58 +87,45 @@
     </main>
 
     <footer id="payment-methods" class="payment-methods">
-        <p class="payment-eyebrow">We accept</p>
-        <div class="payment-logos">
-            <span class="payment-logo" aria-label="Visa">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <text x="28" y="23" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="800" font-style="italic" fill="currentColor">VISA</text>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="Mastercard">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <circle cx="23" cy="18" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <circle cx="33" cy="18" r="9" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="American Express">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <text x="28" y="22" text-anchor="middle" font-family="Arial, sans-serif" font-size="10.5" font-weight="800" fill="currentColor">AMEX</text>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="PayPal">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <text x="28" y="22" text-anchor="middle" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="currentColor">PayPal</text>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="Apple Pay">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <path d="M15.8 13.6c-.6.7-1.5 1.2-2.4 1.1-.1-.9.3-1.9.9-2.5.6-.7 1.6-1.2 2.4-1.2.1.9-.2 1.8-.9 2.6z" fill="currentColor"/>
-                    <path d="M16.7 14.8c1.3 0 2.3.8 2.9.8.7 0 1.6-.8 2.9-.7 1 .1 2.1.6 2.7 1.6-2.4 1.4-2 4.9.4 5.8-.3.7-.5 1-.9 1.6-.7 1-1.5 2.1-2.6 2.1-1 0-1.4-.7-2.6-.7-1.2 0-1.6.7-2.6.7-1.1 0-2-1-2.7-2-1.5-2.1-2.5-5.7-1-8 .7-1.1 1.9-1.9 3.2-1.9-.1 0 .2-.2.3-.3z" fill="currentColor"/>
-                    <text x="40" y="22" text-anchor="middle" font-family="Arial, sans-serif" font-size="9.5" font-weight="600" fill="currentColor">Pay</text>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="Google Pay">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <text x="28" y="22" text-anchor="middle" font-family="Arial, sans-serif" font-size="9.5" font-weight="700" fill="currentColor">G Pay</text>
-                </svg>
-            </span>
-            <span class="payment-logo" aria-label="EFT bank transfer">
-                <svg viewBox="0 0 56 36" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="1" y="1" width="54" height="34" rx="5" fill="none" stroke="currentColor" stroke-width="1.5"/>
-                    <path d="M28 8l11 6H17l11-6z" fill="currentColor"/>
-                    <rect x="17" y="15" width="3" height="9" fill="currentColor"/>
-                    <rect x="26.5" y="15" width="3" height="9" fill="currentColor"/>
-                    <rect x="36" y="15" width="3" height="9" fill="currentColor"/>
-                    <rect x="15" y="25" width="26" height="2.5" fill="currentColor"/>
-                </svg>
-            </span>
-        </div>
+        <ul class="payment-logos" aria-label="PayFast-supported payment options">
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Visa</text></svg>
+                <span class="sr-only">Visa</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Mastercard</text></svg>
+                <span class="sr-only">Mastercard</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Instant EFT</text></svg>
+                <span class="sr-only">Instant EFT</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Apple Pay</text></svg>
+                <span class="sr-only">Apple Pay</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Google Pay</text></svg>
+                <span class="sr-only">Google Pay</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Capitec Pay</text></svg>
+                <span class="sr-only">Capitec Pay</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Payflex</text></svg>
+                <span class="sr-only">Payflex</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">Mobicred</text></svg>
+                <span class="sr-only">Mobicred</span>
+            </li>
+            <li class="payment-logo">
+                <svg viewBox="0 0 100 40" aria-hidden="true" focusable="false"><rect x="1" y="1" width="98" height="38" rx="6"/><text x="50" y="25" text-anchor="middle">SnapScan</text></svg>
+                <span class="sr-only">SnapScan</span>
+            </li>
+        </ul>
+        <p class="payment-note">Available methods depend on your PayFast checkout setup.</p>
     </footer>
 
     <!-- Contact Modal (reuses the same .modal / .modal-content styling already defined in style.css) -->

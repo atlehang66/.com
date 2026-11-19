@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f3ef">
+    <link rel="stylesheet" href="/admin-assets/admin.css">
+    <title>Store admin | Men's Fashion</title>
+</head>
+<body class="admin-page">
+    <div class="admin-layout">
+        <aside class="admin-sidebar" id="admin-sidebar">
+            <a class="admin-wordmark" href="/">Men's Fashion <span>STORE ADMIN</span></a>
+            <p class="admin-nav-label">MANAGE STORE</p>
+            <nav class="admin-nav" aria-label="Admin sections">
+                <button class="admin-nav-item is-active" type="button" data-view="overview"><span>01</span> Overview</button>
+                <button class="admin-nav-item" type="button" data-view="products"><span>02</span> Products</button>
+                <button class="admin-nav-item" type="button" data-view="categories"><span>03</span> Categories</button>
+                <button class="admin-nav-item" type="button" data-view="brands"><span>04</span> Brands</button>
+                <button class="admin-nav-item" type="button" data-view="inventory"><span>05</span> Inventory</button>
+                <button class="admin-nav-item" type="button" data-view="orders"><span>06</span> Orders</button>
+                <button class="admin-nav-item" type="button" data-view="customers"><span>07</span> Customers</button>
+                <button class="admin-nav-item" type="button" data-view="sales"><span>08</span> Sales</button>
+            </nav>
+            <div class="admin-sidebar-bottom">
+                <span class="owner-dot" aria-hidden="true"></span>
+                <div><strong>Owner account</strong><span id="sidebar-email"></span></div>
+            </div>
+        </aside>
+
+        <div class="admin-main">
+            <header class="admin-topbar">
+                <button class="sidebar-toggle" id="sidebar-toggle" type="button" aria-label="Open admin menu" aria-expanded="false">☰</button>
+                <div class="admin-page-heading">
+                    <p class="admin-eyebrow">STORE ADMIN</p>
+                    <h1 id="page-title">Overview</h1>
+                </div>
+                <div class="admin-top-actions">
+                    <a class="store-link" href="/">View store</a>
+                    <button class="logout-button" id="logout-button" type="button">Sign out</button>
+                </div>
+            </header>
+
+            <main class="admin-content">
+                <section class="admin-view" data-panel="overview">
+                    <div class="welcome-row">
+                        <div>
+                            <h2>Store overview</h2>
+                            <p>A private view of your products, orders, stock, and sales.</p>
+                        </div>
+                        <span class="local-badge">LOCAL SETUP</span>
+                    </div>
+                    <div class="metric-grid">
+                        <article class="metric-card"><span>Active products</span><strong id="metric-products">—</strong><small>Published in the storefront</small></article>
+                        <article class="metric-card"><span>Orders</span><strong id="metric-orders">—</strong><small>All recorded orders</small></article>
+                        <article class="metric-card"><span>Customers</span><strong id="metric-customers">—</strong><small>Created from orders</small></article>
+                        <article class="metric-card"><span>Sales</span><strong id="metric-revenue">—</strong><small>Paid and fulfilled orders · USD</small></article>
+                    </div>
+                    <section class="admin-card brand-setting-card">
+                        <div>
+                            <p class="admin-eyebrow">STOREFRONT DISPLAY</p>
+                            <h2>Group products by brand</h2>
+                            <p>Off keeps the current category sections. Turn it on to show a section for each brand. Shoppers can filter by brand either way.</p>
+                        </div>
+                        <label class="setting-switch">
+                            <input id="brand-sections-setting" type="checkbox">
+                            <span>Use brand sections</span>
+                        </label>
+                    </section>
+                    <section class="admin-card">
+                        <div class="section-heading">
+                            <div><p class="admin-eyebrow">LATEST ACTIVITY</p><h2>Recent orders</h2></div>
+                            <button class="text-button" type="button" data-go="orders">All orders</button>
+                        </div>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th></tr></thead>
+                                <tbody id="recent-orders-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="recent-orders-empty" class="empty-state" hidden>No orders have been recorded yet. The current checkout is a prototype and does not create orders.</p>
+                    </section>
+                </section>
+
+                <section class="admin-view" data-panel="products" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">CATALOG</p><h2>Products</h2><p>Manage titles, descriptions, prices, images, categories, brands, and sizes.</p></div>
+                        <button class="primary-button" id="add-product-button" type="button">Add product</button>
+                    </div>
+                    <div class="admin-card">
+                        <label class="table-search">Find a product<input id="product-search" type="search" placeholder="Search title, category, or brand"></label>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Product</th><th>Category</th><th>Brand</th><th>Price</th><th>Status</th><th></th></tr></thead>
+                                <tbody id="products-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="products-empty" class="empty-state" hidden>No products match this search.</p>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="categories" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">CATALOG STRUCTURE</p><h2>Categories</h2><p>Categories remain the default storefront layout until brand sections are enabled.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <form id="category-form" class="inline-create-form">
+                            <label>Category name<input name="name" maxlength="120" required></label>
+                            <label>Tagline<input name="tagline" maxlength="255"></label>
+                            <label class="short-field">Position<input name="sortOrder" type="number" min="0" value="0"></label>
+                            <button class="primary-button" type="submit">Add category</button>
+                        </form>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Name</th><th>Tagline</th><th>Products</th><th>Position</th><th>Active</th><th></th></tr></thead>
+                                <tbody id="categories-body"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="brands" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">CATALOG STRUCTURE</p><h2>Brands</h2><p>Add brands such as Nike or Adidas, then assign products to them.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <form id="brand-form" class="inline-create-form brand-create-form">
+                            <label>Brand name<input name="name" maxlength="120" required placeholder="e.g. Nike"></label>
+                            <button class="primary-button" type="submit">Add brand</button>
+                        </form>
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Brand</th><th>Products</th><th>Active</th><th></th></tr></thead>
+                                <tbody id="brands-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="brands-empty" class="empty-state" hidden>No brands yet. Add one to make brand filtering available in the storefront.</p>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="inventory" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">STOCK CONTROL</p><h2>Inventory</h2><p>Track quantities by product size. Blank means stock is not tracked. The prototype checkout does not reserve stock.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Product</th><th>Category</th><th>Size</th><th>Quantity</th><th></th></tr></thead>
+                                <tbody id="inventory-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="inventory-empty" class="empty-state" hidden>No product sizes to manage.</p>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="orders" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">FULFILMENT</p><h2>Orders</h2><p>Status changes are manual; this prototype does not verify payments. Paid and fulfilled orders count toward sales.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Order</th><th>Customer</th><th>Date</th><th>Status</th><th>Total</th><th></th></tr></thead>
+                                <tbody id="orders-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="orders-empty" class="empty-state" hidden>No orders yet. The storefront checkout does not submit real orders.</p>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="customers" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">CUSTOMER RECORDS</p><h2>Customers</h2><p>Customer details are created by completed orders.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Orders</th><th>Spend</th></tr></thead>
+                                <tbody id="customers-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="customers-empty" class="empty-state" hidden>No customer records yet.</p>
+                    </div>
+                </section>
+
+                <section class="admin-view" data-panel="sales" hidden>
+                    <div class="section-heading page-section-heading">
+                        <div><p class="admin-eyebrow">PERFORMANCE</p><h2>Sales</h2><p>Monthly totals for paid and fulfilled orders · USD.</p></div>
+                    </div>
+                    <div class="admin-card">
+                        <div class="table-wrap">
+                            <table>
+                                <thead><tr><th>Month</th><th>Orders</th><th>Revenue</th></tr></thead>
+                                <tbody id="sales-body"></tbody>
+                            </table>
+                        </div>
+                        <p id="sales-empty" class="empty-state" hidden>Sales appear here after real orders are recorded.</p>
+                    </div>
+                </section>
+                <p id="admin-message" class="admin-message" role="status" aria-live="polite" hidden></p>
+            </main>
+        </div>
+    </div>
+
+    <dialog id="product-dialog" class="admin-dialog" aria-labelledby="product-dialog-title">
+        <form id="product-form" class="dialog-form">
+            <div class="dialog-heading">
+                <div><p class="admin-eyebrow">PRODUCT CATALOG</p><h2 id="product-dialog-title">Add product</h2></div>
+                <button class="icon-button" id="product-dialog-close" type="button" aria-label="Close">&times;</button>
+            </div>
+            <input name="id" type="hidden">
+            <label>Product title<input name="title" maxlength="200" required></label>
+            <label>Description<textarea name="description" rows="3" maxlength="10000" required></textarea></label>
+            <div class="form-grid">
+                <label>Price (USD)<input name="price" type="number" min="0" step="0.01" required></label>
+                <label>Category<select name="categoryId" required></select></label>
+                <label>Brand <span>(optional)</span><select name="brandId"><option value="">No brand</option></select></label>
+                <label>Size type<select name="sizeType" required>
+                    <option value="apparel">Apparel</option><option value="bottoms">Bottoms</option>
+                    <option value="outerwear">Outerwear</option><option value="footwear">Footwear</option>
+                    <option value="accessory">Accessory</option>
+                </select></label>
+                <label>Status<select name="status"><option value="active">Active</option><option value="draft">Draft</option><option value="archived">Archived</option></select></label>
+                <label>Position<input name="sortOrder" type="number" min="0" value="0"></label>
+            </div>
+            <label>Image path or HTTPS URL<input name="imageUrl" maxlength="2048" placeholder="images/product.jpg" required></label>
+            <p id="product-form-error" class="form-error" role="alert" hidden></p>
+            <div class="dialog-actions"><button class="secondary-button" id="product-cancel" type="button">Cancel</button><button class="primary-button" type="submit">Save product</button></div>
+        </form>
+    </dialog>
+
+    <div id="toast" class="admin-toast" role="status" aria-live="polite" hidden></div>
+    <script src="/admin-assets/app.js" defer></script>
+</body>
+</html>

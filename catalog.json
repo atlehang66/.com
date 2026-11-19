@@ -1,0 +1,261 @@
+{
+  "categories": [
+    {
+      "id": "tops",
+      "name": "Tops",
+      "tagline": "Tailored fits in breathable fabrics",
+      "products": [
+        {
+          "id": 1,
+          "categoryId": "tops",
+          "name": "Slim Fit Tee",
+          "price": 18,
+          "description": "Soft cotton tee with a tailored fit.",
+          "image": "https://m.media-amazon.com/images/I/61KsLk27XNL._AC_SY879_.jpg",
+          "sizeType": "apparel",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 2,
+          "categoryId": "tops",
+          "name": "Oxford Shirt",
+          "price": 42,
+          "description": "Classic oxford for smart-casual looks.",
+          "image": "https://globalgolf.co.za/sites/default/files/styles/product_thumbnail/public/2024-08/AH%2520Oxford%2520Pique_Sky%2520Blue.jpg?itok=wgP7VPES",
+          "sizeType": "apparel",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 3,
+          "categoryId": "tops",
+          "name": "Henley Tee",
+          "price": 22,
+          "description": "Three-button henley in brushed cotton.",
+          "image": "https://d3vfig6e0r0snz.cloudfront.net/rcYjnYuenaTH5vyDF/images/products/c28e86585fdd0e9edf5bb4934d5a3806.webp",
+          "sizeType": "apparel",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 4,
+          "categoryId": "tops",
+          "name": "Flannel Overshirt",
+          "price": 48,
+          "description": "Brushed flannel for layering in cooler weather.",
+          "image": "https://dirtroad.co.za/wp-content/uploads/2024/01/Flannel-Navy-600x600.webp",
+          "sizeType": "apparel",
+          "brandId": null,
+          "brandName": null
+        }
+      ]
+    },
+    {
+      "id": "bottoms",
+      "name": "Bottoms",
+      "tagline": "Built for movement, made to last",
+      "products": [
+        {
+          "id": 5,
+          "categoryId": "bottoms",
+          "name": "Denim Jeans",
+          "price": 58,
+          "description": "Classic denim with durable stitching.",
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRwACoiku21BGlhJ9JY8tgGF64-EeIomr78PbL4BGe2YQ&s=10",
+          "sizeType": "bottoms",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 6,
+          "categoryId": "bottoms",
+          "name": "Casual Chinos",
+          "price": 46,
+          "description": "Versatile chinos in multiple colors.",
+          "image": "https://cdn11.bigcommerce.com/s-1a7tcor/images/stencil/1280x1280/products/5725/51692/ALT-CHI-N_1024X1024__79823.1788681186.jpg?c=2",
+          "sizeType": "bottoms",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 7,
+          "categoryId": "bottoms",
+          "name": "Cargo Pants",
+          "price": 52,
+          "description": "Utility cargo pants with reinforced pockets.",
+          "image": "https://kingsleyheath.co.za/cdn/shop/files/HMWPT0104-K020T33U1-4_1200x.jpg?v=1787306638",
+          "sizeType": "bottoms",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 8,
+          "categoryId": "bottoms",
+          "name": "Relaxed Taper Jeans",
+          "price": 62,
+          "description": "Roomy through the thigh, tapered at the ankle.",
+          "image": "https://d3vfig6e0r0snz.cloudfront.net/rcYjnYuenaTH5vyDF/images/products/1ef7a1fe30521413a1d20fff528aa1ad.webp",
+          "sizeType": "bottoms",
+          "brandId": null,
+          "brandName": null
+        }
+      ]
+    },
+    {
+      "id": "outerwear",
+      "name": "Outerwear",
+      "tagline": "Layers for every kind of cold",
+      "products": [
+        {
+          "id": 9,
+          "categoryId": "outerwear",
+          "name": "Leather Jacket",
+          "price": 189,
+          "description": "Premium leather for an elevated look.",
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS5jquI0ddC8LQlTSeos1qO5HQVSd0JeGB4G0xUzQuYgQ&s=10",
+          "sizeType": "outerwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 10,
+          "categoryId": "outerwear",
+          "name": "Bomber Jacket",
+          "price": 98,
+          "description": "Lightweight bomber for daily wear.",
+          "image": "https://m.media-amazon.com/images/I/712Nd1yrlfL._AC_SX679_.jpg",
+          "sizeType": "outerwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 11,
+          "categoryId": "outerwear",
+          "name": "Denim Jacket",
+          "price": 84,
+          "description": "Classic trucker jacket in washed denim.",
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUmM8dzsAOcWnjIrDfOnleBpcsomC2OtUA_DBo3FpnKw&s=10",
+          "sizeType": "outerwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 12,
+          "categoryId": "outerwear",
+          "name": "Quilted Vest",
+          "price": 76,
+          "description": "Packable insulation for in-between weather.",
+          "image": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYMTEsC4Jg0wCTcTClCc9wgNkGH72MX19URaY_pGuNkUeTaGew1mTLkjA&s=10",
+          "sizeType": "outerwear",
+          "brandId": null,
+          "brandName": null
+        }
+      ]
+    },
+    {
+      "id": "footwear",
+      "name": "Footwear",
+      "tagline": "Step out in something built to last",
+      "products": [
+        {
+          "id": 13,
+          "categoryId": "footwear",
+          "name": "Sneakers",
+          "price": 64,
+          "description": "Comfortable everyday sneakers.",
+          "image": "https://www.mytheresa.com/image/1094/1238/100/cc/P00508078.jpg?image_c_version=2026-10-19T15%3A10%3A05.93Z",
+          "sizeType": "footwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 14,
+          "categoryId": "footwear",
+          "name": "Loafers",
+          "price": 72,
+          "description": "Smart-casual loafers in leather.",
+          "image": "https://www.mytheresa.com/image/1094/1238/100/fe/P01070773.jpg?image_c_version=2026-10-21T09%3A53%3A37.097Z",
+          "sizeType": "footwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 15,
+          "categoryId": "footwear",
+          "name": "Chukka Boots",
+          "price": 68,
+          "description": "Ankle-height boots in suede leather.",
+          "image": "https://www.mytheresa.com/image/1094/1238/100/9f/P01178679.jpg?image_c_version=2026-06-29T13%3A35%3A22.38Z",
+          "sizeType": "footwear",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 16,
+          "categoryId": "footwear",
+          "name": "Canvas Boots",
+          "price": 58,
+          "description": "Rugged canvas boots for everyday wear.",
+          "image": "https://www.mytheresa.com/image/1094/1238/100/77/P01232840.jpg?image_c_version=2026-10-20T10%3A57%3A58.933Z",
+          "sizeType": "footwear",
+          "brandId": null,
+          "brandName": null
+        }
+      ]
+    },
+    {
+      "id": "accessories",
+      "name": "Accessories",
+      "tagline": "Small details, big finish",
+      "products": [
+        {
+          "id": 17,
+          "categoryId": "accessories",
+          "name": "Classic Belt",
+          "price": 28,
+          "description": "Durable leather belt with metal buckle.",
+          "image": "https://thefoschini.vtexassets.com/arquivos/ids/220770836-1200-1600?v=638944720944930000&width=1200&height=1600&aspect=true",
+          "sizeType": "accessory",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 18,
+          "categoryId": "accessories",
+          "name": "Leather Wallet",
+          "price": 34,
+          "description": "Slim bifold wallet in full-grain leather.",
+          "image": "https://sagebrown.co.uk/cdn/shop/files/sagebrown-black-rfid-calf-leather-coin-wallet-with-5-card-slots-black-1240765921.jpg?v=1779980318&width=1000",
+          "sizeType": "accessory",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 19,
+          "categoryId": "accessories",
+          "name": "Wool Beanie",
+          "price": 19,
+          "description": "Ribbed knit beanie for cold mornings.",
+          "image": "https://cdn11.bigcommerce.com/s-t681rh/images/stencil/800x800/products/300/8204/Knitted_Beanie_Black__61213.1757942856.jpg?c=2",
+          "sizeType": "accessory",
+          "brandId": null,
+          "brandName": null
+        },
+        {
+          "id": 20,
+          "categoryId": "accessories",
+          "name": "Crew Socks (3-Pack)",
+          "price": 16,
+          "description": "Breathable cotton-blend crew socks.",
+          "image": "https://cottonon.com/dw/image/v2/BBDS_PRD/on/demandware.static/-/Sites-catalog-master-men/default/dw2842bf55/3610318/3610318-21-2.jpg?sw=1024&sh=1536&sm=fit",
+          "sizeType": "accessory",
+          "brandId": null,
+          "brandName": null
+        }
+      ]
+    }
+  ],
+  "brands": [],
+  "brandSectionsEnabled": false
+}

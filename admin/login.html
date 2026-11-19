@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f4f3ef">
+    <link rel="stylesheet" href="/admin-assets/admin.css">
+    <title>Admin sign in | Men's Fashion</title>
+</head>
+<body class="admin-login-page">
+    <main class="login-card">
+        <a class="admin-wordmark" href="/">Men's Fashion <span>STORE ADMIN</span></a>
+        <p class="admin-eyebrow">OWNER ACCESS</p>
+        <h1>Sign in</h1>
+        <p class="login-description">This private area is for the store owner.</p>
+        <form id="login-form" method="post" action="/api/auth/login">
+            <label for="email">Email address</label>
+            <input id="email" name="email" type="email" autocomplete="username" required>
+            <label for="password">Password</label>
+            <input id="password" name="password" type="password" autocomplete="current-password" required>
+            <p id="login-error" class="form-error" role="alert" hidden></p>
+            <button class="primary-button login-button" type="submit">Sign in</button>
+        </form>
+        <p class="login-footnote">No public sign-up. The owner account is created from the local setup command.</p>
+    </main>
+    <script src="/admin-assets/login.js" defer></script>
+</body>
+</html>

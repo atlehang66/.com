@@ -175,6 +175,14 @@ body {
   line-height: 1.35;
 }
 
+.product-card-brand {
+  grid-column: 1 / -1;
+  margin: -4px 0 0;
+  color: #77786f;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+}
+
 .product-card-price {
   grid-column: 2;
   grid-row: 1;

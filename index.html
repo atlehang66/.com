@@ -56,6 +56,7 @@
             <div class="search-panel-inner">
                 <input type="text" id="product-search" class="product-search-input" placeholder="Search products by name…" autocomplete="off">
                 <div class="category-toggle-group" id="category-toggle-group" role="group" aria-label="Filter by category"></div>
+                <div class="category-toggle-group" id="brand-toggle-group" role="group" aria-label="Filter by brand" hidden></div>
                 <p id="search-no-results" class="search-no-results" hidden>No products match your search.</p>
             </div>
         </div>
@@ -65,7 +66,7 @@
         <section id="products-overview" class="products-overview" aria-labelledby="products-heading">
             <h2 class="sr-only" id="products-heading">Products</h2>
             <div id="catalog-root" class="catalog-root">
-                <!-- Category sections + ad banners are injected here by JS -->
+                <!-- Product sections are loaded from the local store API. -->
             </div>
         </section>
 
@@ -190,6 +191,42 @@
     <script src="bubbles.js"></script>
 
     <script>
+        async function initializeStorefront() {
+        let catalogResponse = await fetch('/api/products');
+        if (catalogResponse.status === 404) {
+            catalogResponse = await fetch('./catalog.json');
+        }
+        if (!catalogResponse.ok) throw new Error('The product catalog could not be loaded.');
+        const catalogData = await catalogResponse.json();
+        const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, character => ({
+            '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+        }[character]));
+
+        const PRODUCT_CATALOG = catalogData.categories.map(category => ({
+            id: category.id,
+            name: category.name,
+            tagline: category.tagline,
+            products: category.products
+        }));
+        const BRAND_OPTIONS = catalogData.brands;
+        const BRAND_SECTIONS_ENABLED = catalogData.brandSectionsEnabled;
+        const brandGroups = new Map();
+        PRODUCT_CATALOG.flatMap(category => category.products).forEach(product => {
+            const id = product.brandId === null ? 'unbranded' : String(product.brandId);
+            if (!brandGroups.has(id)) {
+                brandGroups.set(id, {
+                    id: `brand-${id}`,
+                    name: product.brandName || 'Other products',
+                    tagline: '',
+                    products: []
+                });
+            }
+            brandGroups.get(id).products.push(product);
+        });
+        const DISPLAY_CATALOG = BRAND_SECTIONS_ENABLED
+            ? Array.from(brandGroups.values())
+            : PRODUCT_CATALOG;
+
         /* =========================================================
            SIZE CHARTS
            One chart per garment type. Each option carries the
@@ -241,81 +278,6 @@
             }
         };
 
-        /* =========================================================
-           CATALOG DATA
-           Categories were regrouped for clearer shopping:
-           Tops / Bottoms / Outerwear / Footwear / Accessories,
-           each with its own quick-nav pill. An ad banner is
-           injected after every 2 categories.
-           Swap image paths for real product photography any time —
-           everything else (layout, cart, modal, sizing) keeps working.
-        ========================================================= */
-        const IMG = {
-            shirt: 'images/91D3xTDLwrL._UL1500_.jpg',
-            denim: 'images/US_Loose_Baggy_PLP_Headers__M_569_LOOSESTRAIGHT.jfif',
-            shoe:  'images/18959422-high-heels-shoes.jpg'
-        };
-
-        const PRODUCT_CATALOG = [
-            {
-                id: 'tops',
-                name: 'Tops',
-                tagline: 'Tailored fits in breathable fabrics',
-                products: [
-                    { name: 'Slim Fit Tee',      price: 18.00, image: IMG.shirt, description: 'Soft cotton tee with a tailored fit.', sizeType: 'apparel' },
-                    { name: 'Oxford Shirt',      price: 42.00, image: IMG.shirt, description: 'Classic oxford for smart-casual looks.', sizeType: 'apparel' },
-                    { name: 'Henley Tee',        price: 22.00, image: IMG.shirt, description: 'Three-button henley in brushed cotton.', sizeType: 'apparel' },
-                    { name: 'Flannel Overshirt', price: 48.00, image: IMG.shirt, description: 'Brushed flannel for layering in cooler weather.', sizeType: 'apparel' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'bottoms',
-                name: 'Bottoms',
-                tagline: 'Built for movement, made to last',
-                products: [
-                    { name: 'Denim Jeans',        price: 58.00, image: IMG.denim, description: 'Classic denim with durable stitching.', sizeType: 'bottoms' },
-                    { name: 'Casual Chinos',       price: 46.00, image: IMG.denim, description: 'Versatile chinos in multiple colors.', sizeType: 'bottoms' },
-                    { name: 'Cargo Pants',         price: 52.00, image: IMG.denim, description: 'Utility cargo pants with reinforced pockets.', sizeType: 'bottoms' },
-                    { name: 'Relaxed Taper Jeans', price: 62.00, image: IMG.denim, description: 'Roomy through the thigh, tapered at the ankle.', sizeType: 'bottoms' }
-                ]
-            },
-            {
-                id: 'outerwear',
-                name: 'Outerwear',
-                tagline: 'Layers for every kind of cold',
-                products: [
-                    { name: 'Leather Jacket', price: 189.00, image: IMG.shirt, description: 'Premium leather for an elevated look.', sizeType: 'outerwear' },
-                    { name: 'Bomber Jacket',  price: 98.00,  image: IMG.shirt, description: 'Lightweight bomber for daily wear.', sizeType: 'outerwear' },
-                    { name: 'Denim Jacket',   price: 84.00,  image: IMG.shirt, description: 'Classic trucker jacket in washed denim.', sizeType: 'outerwear' },
-                    { name: 'Quilted Vest',   price: 76.00,  image: IMG.shirt, description: 'Packable insulation for in-between weather.', sizeType: 'outerwear' }
-                ]
-            },
-            // --- ad banner injected here (after every 2 categories) ---
-            {
-                id: 'footwear',
-                name: 'Footwear',
-                tagline: 'Step out in something built to last',
-                products: [
-                    { name: 'Sneakers',     price: 64.00, image: IMG.shoe, description: 'Comfortable everyday sneakers.', sizeType: 'footwear' },
-                    { name: 'Loafers',      price: 72.00, image: IMG.shoe, description: 'Smart-casual loafers in leather.', sizeType: 'footwear' },
-                    { name: 'Chukka Boots', price: 68.00, image: IMG.shoe, description: 'Ankle-height boots in suede leather.', sizeType: 'footwear' },
-                    { name: 'Canvas Boots', price: 58.00, image: IMG.shoe, description: 'Rugged canvas boots for everyday wear.', sizeType: 'footwear' }
-                ]
-            },
-            {
-                id: 'accessories',
-                name: 'Accessories',
-                tagline: 'Small details, big finish',
-                products: [
-                    { name: 'Classic Belt',          price: 28.00, image: IMG.shoe,  description: 'Durable leather belt with metal buckle.', sizeType: 'accessory' },
-                    { name: 'Leather Wallet',        price: 34.00, image: IMG.shirt, description: 'Slim bifold wallet in full-grain leather.', sizeType: 'accessory' },
-                    { name: 'Wool Beanie',           price: 19.00, image: IMG.shirt, description: 'Ribbed knit beanie for cold mornings.', sizeType: 'accessory' },
-                    { name: 'Crew Socks (3-Pack)',   price: 16.00, image: IMG.shirt, description: 'Breathable cotton-blend crew socks.', sizeType: 'accessory' }
-                ]
-            }
-        ];
-
         const AD_BANNERS = [
             {
                 tag: 'Sponsored',
@@ -348,6 +310,10 @@
             const card = document.createElement('article');
             card.className = 'product-card';
             card.dataset.product = product.name;
+            card.dataset.productId = product.id;
+            card.dataset.categoryId = product.categoryId || '';
+            card.dataset.brandId = product.brandId === null ? 'unbranded' : String(product.brandId);
+            card.dataset.brandName = product.brandName || '';
             card.dataset.price = product.price.toFixed(2);
             card.dataset.description = product.description;
             card.dataset.image = product.image;
@@ -358,10 +324,11 @@
 
             card.innerHTML = `
                 <div class="product-card-media">
-                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    <img src="${escapeHtml(product.image)}" alt="${escapeHtml(product.name)}" loading="lazy">
                 </div>
                 <div class="product-card-body">
-                    <h4 class="product-card-name">${product.name}</h4>
+                    <h4 class="product-card-name">${escapeHtml(product.name)}</h4>
+                    ${product.brandName ? `<p class="product-card-brand">${escapeHtml(product.brandName)}</p>` : ''}
                     <p class="product-card-price">$${product.price.toFixed(2)}</p>
 
                     <div class="size-block">
@@ -384,8 +351,8 @@
             const header = document.createElement('div');
             header.className = 'category-header';
             header.innerHTML = `
-                <h3>${category.name}</h3>
-                <p class="category-sub">${category.tagline}</p>
+                <h3>${escapeHtml(category.name)}</h3>
+                <p class="category-sub">${escapeHtml(category.tagline)}</p>
             `;
 
             const grid = document.createElement('div');
@@ -414,8 +381,8 @@
 
         function renderCategoryNav() {
             const nav = document.getElementById('category-nav');
-            nav.innerHTML = PRODUCT_CATALOG.map(category =>
-                `<a href="#category-${category.id}" class="category-pill">${category.name}</a>`
+            nav.innerHTML = DISPLAY_CATALOG.map(category =>
+                `<a href="#category-${escapeHtml(category.id)}" class="category-pill">${escapeHtml(category.name)}</a>`
             ).join('');
         }
 
@@ -423,25 +390,39 @@
             const group = document.getElementById('category-toggle-group');
             const buttons = ['<button type="button" class="category-toggle-btn active" data-category="all">All</button>']
                 .concat(PRODUCT_CATALOG.map(category =>
-                    `<button type="button" class="category-toggle-btn" data-category="${category.id}">${category.name}</button>`
+                    `<button type="button" class="category-toggle-btn" data-category="${escapeHtml(category.id)}">${escapeHtml(category.name)}</button>`
                 ));
             group.innerHTML = buttons.join('');
+
+            const brandGroup = document.getElementById('brand-toggle-group');
+            const hasUnbranded = PRODUCT_CATALOG.some(category => category.products.some(product => product.brandId === null));
+            const brandButtons = ['<button type="button" class="category-toggle-btn active" data-brand="all">All brands</button>']
+                .concat(BRAND_OPTIONS.map(brand =>
+                    `<button type="button" class="category-toggle-btn" data-brand="${Number(brand.id)}">${escapeHtml(brand.name)}</button>`
+                ));
+            if (hasUnbranded) brandButtons.push('<button type="button" class="category-toggle-btn" data-brand="unbranded">Other</button>');
+            brandGroup.innerHTML = brandButtons.join('');
+            brandGroup.hidden = BRAND_OPTIONS.length === 0 && !hasUnbranded;
         }
 
         function renderCatalog() {
             const root = document.getElementById('catalog-root');
             root.innerHTML = '';
+            if (!DISPLAY_CATALOG.length) {
+                root.textContent = 'No products are available right now.';
+                return;
+            }
 
             let adIndex = 0;
-            PRODUCT_CATALOG.forEach((category, i) => {
+            DISPLAY_CATALOG.forEach((category, i) => {
                 root.appendChild(renderCategorySection(category));
 
                 // Insert an ad banner after every 2 categories
                 const categoriesSoFar = i + 1;
                 const isPairBoundary = categoriesSoFar % 2 === 0;
-                const isLastCategory = categoriesSoFar === PRODUCT_CATALOG.length;
+                const isLastCategory = categoriesSoFar === DISPLAY_CATALOG.length;
 
-                if (isPairBoundary && !isLastCategory && adIndex < AD_BANNERS.length) {
+                if (!BRAND_SECTIONS_ENABLED && isPairBoundary && !isLastCategory && adIndex < AD_BANNERS.length) {
                     root.appendChild(renderAdBanner(AD_BANNERS[adIndex]));
                     adIndex++;
                 }
@@ -499,18 +480,24 @@
             if (!saved) return [];
 
             const parsed = JSON.parse(saved);
+            if (!Array.isArray(parsed)) throw new Error('Saved cart data is invalid.');
             const products = PRODUCT_CATALOG.reduce((all, category) => all.concat(category.products), []);
-            if (!Array.isArray(parsed) || parsed.some(item => {
+            const restored = parsed.map(item => {
                 const product = item && typeof item.name === 'string'
-                    ? products.find(candidate => candidate.name === item.name)
+                    ? products.find(candidate => item.productId
+                        ? String(candidate.id) === String(item.productId)
+                        : candidate.name === item.name)
                     : null;
-                return !product ||
-                    Number(item.price) !== product.price ||
-                    !SIZE_CHARTS[product.sizeType].options.some(option => option.size === item.size);
-            })) {
+                if (!product || Number(item.price) !== product.price || item.name !== product.name ||
+                    !SIZE_CHARTS[product.sizeType].options.some(option => option.size === item.size)) {
+                    throw new Error('Saved cart data is invalid.');
+                }
+                return { ...item, productId: product.id, name: product.name, price: product.price.toFixed(2) };
+            });
+            if (restored.length !== parsed.length) {
                 throw new Error('Saved cart data is invalid.');
             }
-            return parsed;
+            return restored;
         }
 
         function persistCart() {
@@ -555,8 +542,10 @@
         const searchPanel = document.getElementById('search-panel');
         const productSearchInput = document.getElementById('product-search');
         const categoryToggleGroup = document.getElementById('category-toggle-group');
+        const brandToggleGroup = document.getElementById('brand-toggle-group');
         const searchNoResults = document.getElementById('search-no-results');
         let activeCategoryFilter = 'all';
+        let activeBrandFilter = 'all';
 
         // --- size selection on a grid card ---
         function selectSize(card, chip) {
@@ -717,7 +706,13 @@
                 cartIcon.disabled = cartWasDisabled;
                 if (closeModalAfter) modal.style.display = 'none';
 
-                cartItems.push({ name: card.dataset.product, price: card.dataset.price, size, id: Date.now() });
+                cartItems.push({
+                    productId: card.dataset.productId,
+                    name: card.dataset.product,
+                    price: card.dataset.price,
+                    size,
+                    id: Date.now()
+                });
                 persistCart();
                 updateCartCount();
 
@@ -763,7 +758,7 @@
             let itemsHTML = '';
             let total = 0;
             cartItems.forEach((item, index) => {
-                itemsHTML += `<div class="cart-item"><span>${index + 1}. ${item.name} <span class="cart-item-size">(Size ${item.size})</span></span><span>$${item.price}</span></div>`;
+                itemsHTML += `<div class="cart-item"><span>${index + 1}. ${escapeHtml(item.name)} <span class="cart-item-size">(Size ${escapeHtml(item.size)})</span></span><span>$${Number(item.price).toFixed(2)}</span></div>`;
                 total += parseFloat(item.price);
             });
 
@@ -835,19 +830,27 @@
             applyFilters();
         });
 
+        brandToggleGroup.addEventListener('click', (e) => {
+            const btn = e.target.closest('.category-toggle-btn');
+            if (!btn) return;
+            activeBrandFilter = btn.dataset.brand;
+            brandToggleGroup.querySelectorAll('.category-toggle-btn').forEach(button => button.classList.toggle('active', button === btn));
+            applyFilters();
+        });
+
         function applyFilters() {
             const term = productSearchInput.value.trim().toLowerCase();
-            const isFiltering = term !== '' || activeCategoryFilter !== 'all';
+            const isFiltering = term !== '' || activeCategoryFilter !== 'all' || activeBrandFilter !== 'all';
             let totalVisible = 0;
 
             document.querySelectorAll('.category-section').forEach(section => {
-                const categoryId = section.id.replace('category-', '');
-                const matchesCategory = activeCategoryFilter === 'all' || categoryId === activeCategoryFilter;
-
                 let visibleInSection = 0;
                 section.querySelectorAll('.product-card').forEach(card => {
-                    const matchesTerm = !term || card.dataset.product.toLowerCase().includes(term);
-                    const show = matchesCategory && matchesTerm;
+                    const matchesCategory = activeCategoryFilter === 'all' || card.dataset.categoryId === activeCategoryFilter;
+                    const matchesBrand = activeBrandFilter === 'all' || card.dataset.brandId === activeBrandFilter;
+                    const searchable = `${card.dataset.product} ${card.dataset.brandName || ''}`.toLowerCase();
+                    const matchesTerm = !term || searchable.includes(term);
+                    const show = matchesCategory && matchesBrand && matchesTerm;
                     card.classList.toggle('is-filtered-out', !show);
                     if (show) visibleInSection++;
                 });
@@ -894,6 +897,15 @@
         });
 
         if (window.location.hash === '#cart' && cartItems.length) showCartModal();
+        }
+
+        initializeStorefront().catch(error => {
+            console.error('Unable to load the storefront catalog.', error);
+            const notice = document.createElement('p');
+            notice.className = 'catalog-load-error';
+            notice.textContent = 'Products are temporarily unavailable. Please try again later.';
+            document.getElementById('catalog-root').replaceChildren(notice);
+        });
     </script>
 </body>
 </html>
